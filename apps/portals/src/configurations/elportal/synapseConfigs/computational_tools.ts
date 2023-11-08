@@ -1,8 +1,10 @@
-import { GenericCardSchema } from 'synapse-react-client/dist/containers/GenericCard'
-import { SynapseConstants } from 'synapse-react-client'
+import {
+  CardConfiguration,
+  GenericCardSchema,
+  SynapseConstants,
+} from 'synapse-react-client'
 import { SynapseConfig } from 'types/portal-config'
-import { CardConfiguration } from 'synapse-react-client/dist/containers/CardContainerLogic'
-import { computationalSql } from '../resources'
+import { computationalSql, defaultSearchConfiguration } from '../resources'
 
 const computationalSchema: GenericCardSchema = {
   type: SynapseConstants.COMPUTATIONAL,
@@ -19,9 +21,9 @@ export const computationalCardConfiguration: CardConfiguration = {
   labelLinkConfig: [
     {
       isMarkdown: false,
-      matchColumnName: 'grant',
-      URLColumnName: 'Grant Number',
       baseURL: 'Explore/Projects/DetailsPage',
+      URLColumnName: 'grantNumber',
+      matchColumnName: 'grant',
     },
   ],
 }
@@ -36,17 +38,8 @@ const computationalTools: SynapseConfig = {
     cardConfiguration: computationalCardConfiguration,
     shouldDeepLink: true,
     name: 'Computational Tools',
-    facetsToPlot: ['grant', 'program', 'softwareType'],
-    searchConfiguration: {
-      searchable: [
-        'contributor',
-        'name',
-        'grant',
-        'program',
-        'softwareType',
-        'summary',
-      ],
-    },
+    facetsToPlot: ['grant', 'softwareType'],
+    searchConfiguration: defaultSearchConfiguration,
   },
 }
 

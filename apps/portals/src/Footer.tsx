@@ -2,8 +2,8 @@ import React from 'react'
 import footerConfig from './config/footerConfig'
 import logoFooterConfig from './config/logoFooterConfig'
 import { ReactComponent as PoweredBySvg } from './portal-assets/poweredbysynapse.svg'
-import Versions from 'portal-components/Versions'
-import ExperimentalMode from 'synapse-react-client/dist/containers/ExperimentalMode' // synapse-react-client/dist/utils/functions/sqlFunctions
+import Versions from './portal-components/Versions'
+import { SynapseConstants, ExperimentalMode } from 'synapse-react-client'
 
 function Footer() {
   const goToTop = () => {
@@ -27,7 +27,7 @@ function Footer() {
   )
   const termsOfServiceUrl =
     footerConfig.termsOfService ??
-    'https://s3.amazonaws.com/static.synapse.org/governance/SageBionetworksSynapseTermsandConditionsofUse.pdf?v=5'
+    SynapseConstants.URL_TERMS_CONDITIONS_AGREEMENT
   return (
     <footer id="footer" className="center-content">
       <div id="portal-title-footer">

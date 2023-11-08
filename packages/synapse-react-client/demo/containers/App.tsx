@@ -1,23 +1,24 @@
 import $RefParser from '@apidevtools/json-schema-ref-parser'
-import * as React from 'react'
-import { Alert } from 'react-bootstrap'
+import React from 'react'
+import { Alert } from '@mui/material'
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom'
-import StandaloneLoginForm from '../../src/lib/containers/auth/StandaloneLoginForm'
-import SynapseForm from '../../src/lib/containers/synapse_form_wrapper/SynapseForm'
-import SynapseFormSubmissionsGrid from '../../src/lib/containers/synapse_form_wrapper/SynapseFormSubmissionsGrid'
-import SynapseFormWrapper from '../../src/lib/containers/synapse_form_wrapper/SynapseFormWrapper'
-import { SynapseClient } from '../../src/lib/utils/'
-import { SynapseContextProvider } from '../../src/lib/utils/SynapseContext'
+import StandaloneLoginForm from '../../src/components/Authentication/StandaloneLoginForm'
+import SynapseForm from '../../src/components/SynapseForm/SynapseForm'
+import SynapseFormSubmissionsGrid from '../../src/components/SynapseForm/SynapseFormSubmissionsGrid'
+import SynapseFormWrapper from '../../src/components/SynapseForm/SynapseFormWrapper'
+import { SynapseClient } from '../../src/utils/'
+import { SynapseContextProvider } from '../../src/utils/context/SynapseContext'
 import {
   mockFormSchema as formSchema,
   mockNavSchema as formNavSchema,
   mockUiSchema as formUiSchema,
-} from '../../mocks/mock_drug_tool_data'
+} from '../../src/mocks/mock_drug_tool_data'
 import '../style/App.scss'
 import '../style/DemoStyle.scss'
 import Demo from './Demo'
 import Playground from './playground/Playground'
-// import { useDetectSSOCode } from '../../src/lib/utils/hooks/useDetectSSOCode'
+import FullContextProvider from '../../src/utils/context/FullContextProvider'
+// import { useDetectSSOCode } from '../../src/utils/hooks/useDetectSSOCode'
 
 /**
  * Demo of features that can be used from src/demo/utils/SynapseClient
@@ -140,12 +141,7 @@ export default class App extends React.Component<{}, AppState> {
     const { token, getSessionCalled } = this.state
 
     const alert = (
-      <Alert
-        dismissible={false}
-        show={true}
-        variant={'warning'}
-        transition={false}
-      >
+      <Alert severity={'warning'}>
         <h4>@Deprecated</h4>
         <p>
           Demo a new component by creating a .md file of the same name
@@ -169,7 +165,7 @@ export default class App extends React.Component<{}, AppState> {
       )
     }
     return (
-      <SynapseContextProvider
+      <FullContextProvider
         synapseContext={{
           accessToken: token,
           isInExperimentalMode: SynapseClient.isInSynapseExperimentalMode(),
@@ -281,7 +277,7 @@ export default class App extends React.Component<{}, AppState> {
             <Route exact={true} path="/mockForm" render={MockForm} />
           </div>
         </Router>
-      </SynapseContextProvider>
+      </FullContextProvider>
     )
   }
 }

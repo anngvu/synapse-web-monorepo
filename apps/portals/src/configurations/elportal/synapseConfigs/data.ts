@@ -1,5 +1,5 @@
 import { SynapseConfig } from 'types/portal-config'
-import { dataSql } from '../resources'
+import { dataSql, defaultSearchConfiguration } from '../resources'
 
 const rgbIndex = 1
 
@@ -8,8 +8,11 @@ const data: SynapseConfig = {
   props: {
     rgbIndex,
     name: 'Data',
-    // showExportToCavatica: true,
+    showExportToCavatica: true,
+    cavaticaHelpURL: '/Limited%20Data%20Commons',
     visibleColumnCount: 10,
+    isRowSelectionVisible: true,
+    additionalFiltersLocalStorageKey: 'cohort-builder-files-perspective',
     tableConfiguration: {
       showAccessColumn: true,
       showDownloadColumn: true,
@@ -18,48 +21,13 @@ const data: SynapseConfig = {
           matchColumnName: 'study',
           isMarkdown: false,
           baseURL: 'Explore/Studies/DetailsPage',
-          URLColumnName: 'Study_Name',
-          wrapValueWithParens: true,
+          URLColumnName: 'studyKey',
         },
       ],
     },
     sql: dataSql,
-    searchConfiguration: {
-      searchable: [
-        'study',
-        'dataType',
-        'assay',
-        'organ',
-        'tissue',
-        'species',
-        'diagnosis',
-        'sex',
-        'consortium',
-        'grant',
-        'modelSystemName',
-        'treatmentType',
-        'specimenID',
-        'individualID',
-        'individualIdSource',
-        'specimenIdSource',
-        'resourceType',
-        'dataSubtype',
-        'metadataType',
-        'assayTarget',
-        'analysisType',
-        'cellType',
-        'nucleicAcidSource',
-        'fileFormat',
-        'group',
-        'name',
-        'isModelSystem',
-        'isConsortiumAnalysis',
-        'isMultiSpecimen',
-        'metaboliteType',
-        'chromosome',
-      ],
-    },
     shouldDeepLink: true,
+    searchConfiguration: defaultSearchConfiguration,
   },
 }
 

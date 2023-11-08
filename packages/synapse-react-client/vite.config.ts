@@ -1,15 +1,18 @@
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import react from '@vitejs/plugin-react'
-import path from 'path'
+import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import svgr from 'vite-plugin-svgr'
+import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
+import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 
 export default defineConfig({
-  root: './demo',
+  root: './src',
   plugins: [
-    react(),
+    react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     svgr({
       svgrOptions: {
+        plugins: ['@svgr/plugin-jsx'],
         ref: true,
       },
     }),
@@ -17,8 +20,6 @@ export default defineConfig({
   define: {
     __TEST__: JSON.stringify(false),
     __DEV__: JSON.stringify(false),
-    'process.env': {},
-    sql: {},
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -32,7 +33,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, '/src'),
+      src: resolve(__dirname, '/src'),
       process: 'process/browser',
       path: 'path-browserify',
       timers: 'timers-browserify',

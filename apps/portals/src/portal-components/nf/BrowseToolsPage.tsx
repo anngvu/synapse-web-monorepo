@@ -1,31 +1,46 @@
-import { popularSearchesSql, toolsSql } from 'configurations/nf/resources'
-import Layout from 'portal-components/Layout'
-import * as React from 'react'
-import { Button, Form } from 'react-bootstrap'
-import { Typography } from 'synapse-react-client'
-import FeaturedToolsList from 'synapse-react-client/dist/containers/home_page/featured_tools/FeaturedToolsList'
-import IconSvg from 'synapse-react-client/dist/containers/IconSvg'
-import { Query } from 'synapse-react-client/dist/utils/synapseTypes'
-import { TextMatchesQueryFilter } from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
-import { HelpPopover } from 'synapse-react-client/dist/containers/HelpPopover'
+import { SynapseComponents, FeaturedToolsList } from 'synapse-react-client'
+import { popularSearchesSql, toolsSql } from '../../configurations/nf/resources'
+import Layout from '../Layout'
+import React from 'react'
+import { Button, Link, Typography } from '@mui/material'
+import { Query, TextMatchesQueryFilter } from '@sage-bionetworks/synapse-types'
 import { ReactComponent as AnimalModels } from './assets/animalmodels.svg'
 import { ReactComponent as Antibodies } from './assets/antibodies.svg'
 import { ReactComponent as Biobanks } from './assets/biobanks.svg'
 import { ReactComponent as CellLines } from './assets/cell-lines.svg'
 import { ReactComponent as PlasmidsReagents } from './assets/plasmids-reagents.svg'
 import PopularSearches from './PopularSearches'
+import { Form } from 'react-bootstrap'
+import pluralize from 'pluralize'
 
-export const gotoExploreToolsWithFullTextSearch = (fullTextSearchString: string) => {
+export const gotoExploreToolsWithFullTextSearch = (
+  fullTextSearchString: string,
+) => {
   const filter: TextMatchesQueryFilter = {
-    concreteType: "org.sagebionetworks.repo.model.table.TextMatchesQueryFilter",
+    concreteType: 'org.sagebionetworks.repo.model.table.TextMatchesQueryFilter',
     searchExpression: fullTextSearchString,
   }
   const query: Query = {
     sql: toolsSql,
     additionalFilters: [filter],
   }
-  window.location.assign(`/Explore/Tools?QueryWrapper0=${JSON.stringify(query)}`)
+  window.location.assign(
+    `/Explore/Tools?QueryWrapper0=${JSON.stringify(query)}`,
+  )
 }
+
+type Category = {
+  resourceName: string
+  image: React.ReactElement
+}
+
+const categories: Category[] = [
+  { resourceName: 'Animal Model', image: <AnimalModels /> },
+  { resourceName: 'Antibody', image: <Antibodies /> },
+  { resourceName: 'Genetic Reagent', image: <PlasmidsReagents /> },
+  { resourceName: 'Cell Line', image: <CellLines /> },
+  { resourceName: 'Biobank', image: <Biobanks /> },
+]
 
 const BrowseToolsPage = () => {
   const [searchText, setSearchText] = React.useState<string>('')
@@ -38,26 +53,39 @@ const BrowseToolsPage = () => {
       sql: toolsSql,
       selectedFacets: [
         {
-          concreteType: "org.sagebionetworks.repo.model.table.FacetColumnValuesRequest",
+          concreteType:
+            'org.sagebionetworks.repo.model.table.FacetColumnValuesRequest',
           columnName: 'resourceType',
-          facetValues: [selectedResource]
-        }
+          facetValues: [selectedResource],
+        },
       ],
     }
-    window.location.assign(`/Explore/Tools?QueryWrapper0=${JSON.stringify(query)}`)
+    window.location.assign(
+      `/Explore/Tools?QueryWrapper0=${JSON.stringify(query)}`,
+    )
   }
+
+  const wideButtonSx = { marginTop: '50px' }
 
   return (
     <div className="browse-tools-page">
-      <div className="header bootstrap-4-backport">
+      <div className="header">
         <div className="home-container-description">
           <Typography variant="headline1" className="sectionTitle">
-            NF Research Tools Database
+            NF Research Tools Central
           </Typography>
-          <div className="center-content">
+          <div
+            className="center-content"
+            style={{ marginLeft: '10px', marginRight: '10px' }}
+          >
             <div className="description">
               <Typography variant="body1">
-                The NF Research Tools Database aims to support the development of a robust research toolkit and lower the barrier of entry to neurofibromatosis (NF) research. The database includes NF-associated animal models, cell lines, antibodies, and genetic reagents and details on tool characteristics and sourcing, as well as observational and experimental data.
+                NF Research Tools Central aims to support the development of a
+                robust research toolkit and lower the barrier of entry to
+                neurofibromatosis (NF) research. The database includes
+                NF-associated animal models, cell lines, antibodies, and genetic
+                reagents and details on tool characteristics and sourcing, as
+                well as observational and experimental data.
               </Typography>
             </div>
           </div>
@@ -71,70 +99,86 @@ const BrowseToolsPage = () => {
           Drill-down to explore specific types of NF research tools.
         </Typography>
         <div className="categories">
-          <button onClick={() => gotoExploreToolsWithSelectedResource('Animal Model')}>
-            <AnimalModels />
-            <Typography variant="headline3">
-              Animal Models
-            </Typography>
-          </button>
-          <button onClick={() => gotoExploreToolsWithSelectedResource('Antibody')}>
-            <Antibodies />
-            <Typography variant="headline3">
-              Antibodies
-            </Typography>
-          </button>
-          <button onClick={() => gotoExploreToolsWithSelectedResource('Genetic Reagent')}>
-            <PlasmidsReagents />
-            <Typography variant="headline3">
-              Genetic Reagents
-            </Typography>
-          </button>
-          <button onClick={() => gotoExploreToolsWithSelectedResource('Cell Line')}>
-            <CellLines />
-            <Typography variant="headline3">
-              Cell Lines
-            </Typography>
-          </button>
-          <button onClick={() => gotoExploreToolsWithSelectedResource('Biobank')}>
-            <Biobanks />
-            <Typography variant="headline3">
-              Biobanks
-            </Typography>
-          </button>
+          {categories.map((category) => {
+            return (
+              <button
+                key={category.resourceName}
+                onClick={() =>
+                  gotoExploreToolsWithSelectedResource(category.resourceName)
+                }
+              >
+                {category.image}
+                <Typography variant="headline3">
+                  {pluralize(category.resourceName)}
+                </Typography>
+              </button>
+            )
+          })}
         </div>
-        <div className="center-content bootstrap-4-backport">
-          <Button className="pill-xl" variant="primary" onClick={() => gotoExploreTools()}>VIEW ALL TOOLS</Button>
+        <div className="center-content">
+          <SynapseComponents.WideButton
+            sx={wideButtonSx}
+            variant="contained"
+            onClick={() => gotoExploreTools()}
+          >
+            View All Tools
+          </SynapseComponents.WideButton>
         </div>
       </Layout>
       <div className="home-container-description  home-bg-dark home-spacer">
-        <Typography variant="sectionTitle" className="sectionTitle">
+        <Typography
+          variant="sectionTitle"
+          sx={{
+            textAlign: 'center',
+            paddingTop: '50px',
+            paddingBottom: '15px',
+          }}
+        >
           What Tools Can We Help You Find?
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{ textAlign: 'center', paddingBottom: '15px' }}
+        >
+          For the greatest success with your search, ensure your spelling is
+          correct and avoid pluralization or suffixes.
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{ textAlign: 'center', paddingBottom: '40px' }}
+        >
+          <Link
+            href="https://help.nf.synapse.org/NFdocs/Tips-for-Search.2640478225.html"
+            target="_blank"
+          >
+            Learn More About MySQL Full Text Search
+          </Link>
         </Typography>
         <div className="center-content">
           <div className="searchToolsRow">
             <div className="searchInputWithIcon">
-              <IconSvg icon='searchOutlined' />
-              <Form.Control type="search" placeholder=""
+              <SynapseComponents.IconSvg icon="searchOutlined" />
+              <Form.Control
+                type="search"
+                placeholder=""
                 value={searchText}
-                onChange={event => {
+                onChange={(event) => {
                   setSearchText(event.target.value)
                 }}
-                onKeyPress={evt => {
+                onKeyPress={(evt) => {
                   if (evt.key === 'Enter') {
                     gotoExploreToolsWithFullTextSearch(searchText)
                   }
                 }}
               />
             </div>
-            <div className="search-button-container bootstrap-4-backport">
-              <Button className="pill-xl" variant="primary" onClick={() => gotoExploreToolsWithFullTextSearch(searchText)}>SEARCH</Button>
-            </div>
-            <div className="help-popover">
-              <HelpPopover
-                markdownText={'This search bar is powered by MySQL Full Text Search.'}
-                helpUrl={'https://help.nf.synapse.org/NFdocs/Tips-for-Search.2640478225.html'}
-                placement="left"
-              />
+            <div className="search-button-container">
+              <Button
+                variant="contained"
+                onClick={() => gotoExploreToolsWithFullTextSearch(searchText)}
+              >
+                Search
+              </Button>
             </div>
           </div>
         </div>
@@ -145,7 +189,7 @@ const BrowseToolsPage = () => {
           <PopularSearches sql={popularSearchesSql} />
         </div>
       </div>
-      
+
       <Layout outsideContainerClassName="home-spacer">
         <Typography variant="sectionTitle" className="sectionTitle">
           Recently Added Tools
@@ -164,23 +208,42 @@ const BrowseToolsPage = () => {
             toolDetailPageURL={'/Explore/Tools/DetailsPage?resourceId='}
           />
         </div>
-        <div className="center-content bootstrap-4-backport">
-          <Button className="pill-xl" variant="primary" onClick={() => gotoExploreTools()}>VIEW ALL TOOLS</Button>
+        <div className="center-content">
+          <SynapseComponents.WideButton
+            sx={wideButtonSx}
+            variant="contained"
+            onClick={() => gotoExploreTools()}
+          >
+            View All Tools
+          </SynapseComponents.WideButton>
         </div>
       </Layout>
       <Layout outsideContainerClassName="home-spacer highlightSubmitToolContainer">
         <Typography variant="sectionTitle" className="sectionTitle">
-          Submit a Tool to the Database
+          Submit a Tool to NF Research Tools Central
         </Typography>
         <div className="center-content">
           <div className="description">
             <Typography variant="body1">
-              We are currently accepting submissions that describe any NF1-related mouse model, cell line, genetic reagent (e.g. plasmid, CRISPR), antibody, or biobank. If you have a tool that you would like to add to the Research Tools Database, please click the {'"'}Submit a Tool{'"'} button below to learn more.
+              We are currently accepting submissions that describe any
+              NF1-related mouse model, cell line, genetic reagent (e.g. plasmid,
+              CRISPR), antibody, or biobank. If you have a tool that you would
+              like to add to NF Research Tools Central, please click the {'"'}
+              Submit a Tool{'"'} button below to learn more.
             </Typography>
           </div>
         </div>
-        <div className="center-content bootstrap-4-backport">
-          <Button href="https://help.nf.synapse.org/NFdocs/2555543592.html" className="pill-xl highlightSubmitToolButton" variant="secondary" target="_blank">SUBMIT A TOOL</Button>
+        <div className="center-content">
+          <SynapseComponents.WideButton
+            sx={wideButtonSx}
+            href="https://forms.gle/htFkH5yewLzP1RAu7"
+            className="highlightSubmitToolButton"
+            variant="contained"
+            // @ts-expect-error - target prop exists, but TS doesn't recognize on styled component
+            target="_blank"
+          >
+            Submit A Tool
+          </SynapseComponents.WideButton>
         </div>
       </Layout>
     </div>

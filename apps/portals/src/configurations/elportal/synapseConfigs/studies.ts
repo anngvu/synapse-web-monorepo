@@ -1,13 +1,17 @@
 import { SynapseConfig } from 'types/portal-config'
 import { DetailsPageProps } from 'types/portal-util-types'
-import { SynapseConstants } from 'synapse-react-client'
-import { CardConfiguration } from 'synapse-react-client/dist/containers/CardContainerLogic'
+import { SynapseConstants, CardConfiguration } from 'synapse-react-client'
 import studyHeaderSvg from '../style/study-header.svg'
-import { studiesSql, dataSql, dataOnStudiesPageSql } from '../resources'
+import {
+  studiesSql,
+  dataSql,
+  dataOnStudiesPageSql,
+  defaultSearchConfiguration,
+} from '../resources'
 import {
   ColumnMultiValueFunction,
   ColumnSingleValueFilterOperator,
-} from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
+} from '@sage-bionetworks/synapse-types'
 
 const rgbIndex = 0
 export const studyCardConfiguration: CardConfiguration = {
@@ -16,41 +20,38 @@ export const studyCardConfiguration: CardConfiguration = {
   titleLinkConfig: {
     isMarkdown: false,
     baseURL: 'Explore/Studies/DetailsPage',
-    URLColumnName: 'Study',
-    matchColumnName: 'Study',
+    URLColumnName: 'studyKey',
+    matchColumnName: 'studyKey',
   },
   labelLinkConfig: [
     {
       isMarkdown: false,
-      matchColumnName: 'Program',
-      URLColumnName: 'Program',
-      baseURL: 'Explore/Programs/DetailsPage',
+      baseURL: 'Explore/Projects/DetailsPage',
+      URLColumnName: 'grantNumber',
+      matchColumnName: 'grantNumber',
     },
   ],
   genericCardSchema: {
     type: SynapseConstants.STUDY,
-    title: 'Study_Name',
-    subTitle: 'Data_Contributor',
+    title: 'studyName',
+    subTitle: 'dataContributor',
     icon: 'Access_Type',
-    description: 'Study_Description',
+    description: 'studyAbstract',
     secondaryLabels: [
-      'DataType_All',
+      'dataTypeAll',
       'studyFocus',
-      'Number_Of_Individuals',
+      'species',
       'specimenType',
-      'Species',
+      'program',
+      'grantNumber',
+      'Number_Of_Individuals',
       'Cohort_Type',
       'Study_Status',
-      'Program',
-      'Grant Number',
     ],
   },
 }
 const columnAliases = {
-  DataType_All: 'Data Types',
-  Data_Contributor: 'Data Contributor',
-  Study_Description: 'Study Description',
-  Study_Name: 'Study Name',
+  dataTypeAll: 'Data Types',
   Number_of_Individuals: 'Individuals',
   'Grant Number': 'Grant',
 }
@@ -63,19 +64,7 @@ const studies: SynapseConfig = {
     name: 'Studies',
     shouldDeepLink: true,
     cardConfiguration: studyCardConfiguration,
-    searchConfiguration: {
-      searchable: [
-        'Study_Name',
-        'Study_Description',
-        'DataType_All',
-        'studyFocus',
-        'Data_Contributor',
-        'specimenType',
-        'Species',
-        'Grant Number',
-        'Program',
-      ],
-    },
+    searchConfiguration: defaultSearchConfiguration,
   },
 }
 
@@ -91,7 +80,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
       synapseConfigArray: [
         {
           name: 'Markdown',
-          columnName: 'Study',
+          columnName: 'studyDescription',
           title: 'Study Description',
           props: {},
         },
@@ -103,7 +92,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
         },
         {
           name: 'MarkdownCollapse',
-          columnName: 'Acknowledgement',
+          columnName: 'acknowledgement',
           props: {
             textDescription: 'full statement',
             showCopyPlainText: true,
@@ -111,7 +100,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
         },
         {
           name: 'Markdown',
-          columnName: 'Methods',
+          columnName: 'methods',
           title: 'Methods',
           props: {},
           resolveSynId: {
@@ -120,11 +109,11 @@ export const studiesDetailsPageProps: DetailsPageProps = {
         },
         {
           name: 'CardContainerLogic',
-          columnName: 'Related_Studies',
+          columnName: 'studyKey',
           title: 'Related Studies',
-          tableSqlKeys: ['Study'],
+          tableSqlKeys: ['relatedStudies'],
           props: {
-            sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
+            sqlOperator: ColumnMultiValueFunction.HAS,
             sql: studiesSql,
             ...studyCardConfiguration,
           },
@@ -138,22 +127,6 @@ export const studiesDetailsPageProps: DetailsPageProps = {
       toolTip: 'All of the Data generated within this study',
       cssClass: 'tab-database',
       synapseConfigArray: [
-        {
-          name: 'RssFeedCards',
-          title: 'Recent Data Updates',
-          columnName: 'Study',
-          resolveSynId: {
-            value: true,
-          },
-          props: {
-            url: 'https://news.adknowledgeportal.org',
-            itemsToShow: 3,
-            allowCategories: [],
-            // mailChimpListName: 'study specific list name????',
-            // mailChimpUrl:'https://study specific url????'
-            viewAllNewsButtonText: 'VIEW ALL DATA UPDATES',
-          },
-        },
         {
           name: 'Markdown',
           title: 'Access Requirements',
@@ -169,11 +142,14 @@ export const studiesDetailsPageProps: DetailsPageProps = {
         {
           name: 'QueryWrapperPlotNav',
           props: {
-            sqlOperator: ColumnMultiValueFunction.HAS,
+            sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
             showColumnSelection: true,
             rgbIndex,
-            name: 'Metadata Files',
             visibleColumnCount: 10,
+            name: 'Metadata Files',
+            showExportToCavatica: true,
+            cavaticaHelpURL: '/Limited%20Data%20Commons',
+            isRowSelectionVisible: true,
             tableConfiguration: {
               showAccessColumn: true,
               showDownloadColumn: true,
@@ -183,19 +159,19 @@ export const studiesDetailsPageProps: DetailsPageProps = {
             shouldDeepLink: false,
             defaultShowFacetVisualization: false,
           },
-          resolveSynId: {
-            value: true,
-          },
           tableSqlKeys: ['study'],
-          columnName: 'Study',
+          columnName: 'studyKey',
         },
         {
           name: 'QueryWrapperPlotNav',
           title: 'Study Data',
           props: {
-            sqlOperator: ColumnMultiValueFunction.HAS,
+            sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
             rgbIndex,
             visibleColumnCount: 10,
+            showExportToCavatica: true,
+            cavaticaHelpURL: '/Limited%20Data%20Commons',
+            isRowSelectionVisible: true,
             tableConfiguration: {
               showAccessColumn: true,
               showDownloadColumn: true,
@@ -204,7 +180,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
                   matchColumnName: 'study',
                   isMarkdown: false,
                   baseURL: 'Explore/Studies/DetailsPage',
-                  URLColumnName: 'Study_Name',
+                  URLColumnName: 'studyKey',
                   wrapValueWithParens: true,
                 },
               ],
@@ -212,11 +188,8 @@ export const studiesDetailsPageProps: DetailsPageProps = {
             sql: dataSql,
             shouldDeepLink: false,
           },
-          resolveSynId: {
-            value: true,
-          },
           tableSqlKeys: ['study'],
-          columnName: 'Study',
+          columnName: 'studyKey',
         },
       ],
     },

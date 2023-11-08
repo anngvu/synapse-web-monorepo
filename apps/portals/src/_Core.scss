@@ -23,7 +23,7 @@
 }
 
 %home-bg-util {
-  background: rgba(38, 153, 167, 0.03);
+  background: rgba(Portal.$primary-action-color, 0.05);
   &:last-child {
     // this handles the case when the last element on the home page
     // has its background colored and should not have padding on the bottom
@@ -67,9 +67,6 @@
   display: block;
   position: relative;
   padding-bottom: 60px;
-  @media screen and (max-width: 768px) {
-    padding-top: Portal.$header-height; // reserve space for fixed position nav bar and site logo.
-  }
 }
 
 .uppercase {
@@ -111,9 +108,6 @@ body {
   transition: all 400ms;
 }
 
-%defaultBoxShadow {
-  box-shadow: 3px 3px 5px 0 rgba(0, 0, 0, 0.5);
-}
 // end utilities
 
 %center {
@@ -158,7 +152,6 @@ body {
   flex-basis: 50%;
   display: flex;
   flex-direction: row-reverse;
-  padding-right: 40px;
   @media screen and (max-width: 520px) {
     padding-right: 0px;
   }
@@ -169,14 +162,7 @@ body {
 #banner + .nav {
   top: Portal.$banner-height;
 }
-.explore-nav-container {
-  background-color: #f9f9f9;
-  border-bottom: 4px solid #dcdcdc;
-  padding: 30px 30px 0px 45px;
-  .title {
-    margin-top: 0px;
-  }
-}
+
 .DownloadCartPage .pageHeader {
   padding: 30px 30px 0px 30px;
 }
@@ -195,7 +181,7 @@ body {
   &.top-nav {
     position: fixed;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-    background: rgba(256, 256, 256, 0.9);
+    background: rgba(256, 256, 256, 1);
     .nav-button {
       color: Portal.$dark-gray;
     }
@@ -203,23 +189,8 @@ body {
   &.explore-nav {
     margin-left: -24px;
     height: unset;
-    .TabScrollButton svg {
-      color: Portal.$secondary-action-color;
-      font-size: 26px;
-    }
     .nav-button {
       height: 75px;
-      .explore-nav-button-text {
-        color: #515359;
-        font-family: 'Lato', sans-serif;
-        font-weight: 700;
-        @extend %nav-button-text;
-      }
-      &.isSelected {
-        .explore-nav-button-text {
-          color: Portal.$dark-gray;
-        }
-      }
     }
   }
 }
@@ -235,7 +206,6 @@ body {
 }
 
 %nav-button-text {
-  text-transform: uppercase;
   font-weight: bold;
   font-size: 16px;
   text-align: center;
@@ -253,6 +223,10 @@ body {
   white-space: normal;
   @extend %nav-button-text;
   @extend %fillerBorder;
+}
+
+.nav-button-signin {
+  margin-left: 20px;
 }
 
 .nav-button,
@@ -281,6 +255,9 @@ a.nav-button {
 .nav-button-container.isSelected {
   @extend %hoverFade;
   @extend %bottomBorderNav;
+  border-radius: 0;
+  border-right: 0;
+  border-left: 0;
 }
 
 // override src behavior
@@ -298,6 +275,9 @@ button.dropdown-toggle.nav-button:hover {
   color: #404b63;
   box-shadow: none;
   outline: none;
+  border-radius: 0;
+  border-right: 0;
+  border-left: 0;
 }
 .nav-link-container .show button.dropdown-toggle {
   border-bottom-color: Portal.$secondary-action-color;
@@ -306,7 +286,6 @@ button.dropdown-toggle.nav-button:hover {
 #home-link {
   font-weight: bold;
   font-size: 25px;
-  margin-left: 15px;
 }
 
 %nav-dropdown-item {
@@ -378,6 +357,7 @@ button.dropdown-toggle.nav-button:hover {
   }
   height: 60px;
   width: 100%;
+  overflow-x: hidden;
 }
 
 .SRC-primary-text-color-background {
@@ -389,13 +369,8 @@ button.dropdown-toggle.nav-button:hover {
   font-weight: bold;
   font-size: 16px;
   height: 39px;
-  border-radius: 30px;
   padding: 5px 38px;
   border: none;
-  &:hover {
-    @extend %hoverFade;
-    @extend %defaultBoxShadow;
-  }
 }
 
 .footer-help {
@@ -413,10 +388,6 @@ button.dropdown-toggle.nav-button:hover {
 }
 
 .header-text {
-  h2 {
-    font-weight: bold;
-    margin-bottom: 30px;
-  }
   height: fit-content;
   color: white;
   &.blur {
@@ -429,9 +400,6 @@ button.dropdown-toggle.nav-button:hover {
   padding: 30px;
   margin-top: 30px;
   margin-bottom: 30px;
-  p {
-    font-size: 16px;
-  }
 }
 // end header
 
@@ -440,60 +408,13 @@ button.dropdown-toggle.nav-button:hover {
   font-weight: bold;
   margin-bottom: 10px;
 }
-// ExploreButtons
-
-.explore-buttons {
-  margin-top: 30px;
-  margin-bottom: 30px;
-  text-transform: uppercase;
-  display: flex;
-  align-content: center;
-  justify-content: space-between;
-  button {
-    text-transform: uppercase;
-    border-radius: 6px;
-    letter-spacing: 0.4px; /* make buttons more readable */
-    flex-basis: 22%; /* make buttons wider on home page */
-    margin: 0px 8px;
-    border: none;
-    position: relative;
-    height: 50px;
-    color: white;
-    &:first-child {
-      margin-left: 0px;
-    }
-    &:last-child {
-      margin-right: 0px;
-    }
-    // caret dropdown
-    &.active-button::after {
-      border-top-color: inherit !important;
-      border-right: solid 12px transparent;
-      border-left: solid 12px transparent;
-      border-top: solid 12px;
-      transform: translateX(-50%);
-      position: absolute;
-      z-index: 3;
-      content: '';
-      top: 100%;
-      left: 50%;
-      height: 0;
-      width: 0;
-    }
-    &:hover {
-      @extend %hoverFade;
-      @extend %defaultBoxShadow;
-    }
-  }
-}
-// end ExploreButtons
 
 // title
 .title {
   text-transform: uppercase;
   font-weight: 700;
   font-size: 21px;
-  margin: 49px 0 14px 0;
+  margin: 80px 0 30px 0;
 }
 .center-title {
   text-align: center;
@@ -650,10 +571,6 @@ div.SRC-marginBottomTen {
   margin-bottom: 20px;
 }
 
-.statefulButtonTitle {
-  margin-top: 15px;
-}
-
 @media screen and (max-width: 768px) {
   .QueryWrapperPlotNav {
     .TopLevelControls {
@@ -711,21 +628,21 @@ div[data-id='tooltip'] {
 }
 
 .QueryWrapperPlotNav {
-  .TopLevelControls,
   .FacetFilterControls {
-    padding: 10px 30px;
+    padding: 10px 0px;
   }
-  .TotalQueryResults.hasFilters > * {
-    margin-left: 30px;
-    margin-right: 30px;
+  .TopLevelControls {
+    margin: 10px 0px 0px;
   }
 }
 
 .DetailsPage {
   .QueryWrapperPlotNav {
-    .TopLevelControls,
     .FacetFilterControls {
       padding: 0px;
+    }
+    .TopLevelControls {
+      margin: 0px;
     }
     .TotalQueryResults.hasFilters > * {
       margin-left: 0px;

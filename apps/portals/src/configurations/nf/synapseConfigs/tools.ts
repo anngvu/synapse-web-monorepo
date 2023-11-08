@@ -1,9 +1,9 @@
-import { GenericCardSchema } from 'synapse-react-client/dist/containers/GenericCard'
+import type { GenericCardSchema } from 'synapse-react-client'
 
 import { SynapseConstants } from 'synapse-react-client'
 import { SynapseConfig } from 'types/portal-config'
 import { columnAliases } from './commonProps'
-import { CardConfiguration } from 'synapse-react-client/dist/containers/CardContainerLogic'
+import type { CardConfiguration } from 'synapse-react-client'
 import {
   toolsSql,
   observationsSql,
@@ -13,7 +13,6 @@ import {
   usageRequirementsSql,
   vendorSql,
   catalogNumberSql,
-  mtaRequiredSql,
   toolApplicationsSql,
   mutationsSql,
   publicationsV2Sql,
@@ -25,7 +24,7 @@ import { publicationsV2CardConfiguration } from './publications'
 import {
   ColumnMultiValueFunction,
   ColumnSingleValueFilterOperator,
-} from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
+} from '@sage-bionetworks/synapse-types'
 
 export const newToolsSql = `${toolsSql} order by ROW_ID desc limit 3`
 
@@ -56,6 +55,7 @@ export const toolsSchema: GenericCardSchema = {
     'tumorType',
     'specimenFormat',
     'specimenType',
+    'dateModified',
   ],
 }
 
@@ -195,24 +195,6 @@ export const toolDetailsPageConfig: DetailsPageProps = {
           name: 'SubsectionRowRenderer',
           outsideContainerClassName: 'home-spacer',
           props: {
-            sql: mtaRequiredSql,
-            sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
-            columnNameIsSectionTitle: true,
-            isMarkdown: true,
-            friendlyValuesMap: {
-              no: 'A MTA is **not** required for usage of this resource.',
-              yes: 'A MTA is required for usage of this resource.',
-              unknown:
-                'It is unknown whether a MTA is required for usage of this resource.',
-            },
-          },
-          tableSqlKeys: ['resourceId'],
-          columnName: 'resourceId',
-        },
-        {
-          name: 'SubsectionRowRenderer',
-          outsideContainerClassName: 'home-spacer',
-          props: {
             sql: toolApplicationsSql,
             columnNameIsSectionTitle: true,
             sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
@@ -224,7 +206,6 @@ export const toolDetailsPageConfig: DetailsPageProps = {
         {
           name: 'StandaloneQueryWrapper',
           props: {
-            title: 'Mutations',
             name: 'Mutations',
             unitDescription: 'Mutations',
             sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
@@ -263,16 +244,35 @@ export const toolDetailsPageConfig: DetailsPageProps = {
       uriValue: 'Observations',
       synapseConfigArray: [
         {
-          name: 'CardContainerLogic',
-          props: {
-            sql: `${observationsSql} WHERE observationTime IS NOT NULL ORDER BY observationTime DESC`,
-            type: SynapseConstants.OBSERVATION_CARD,
-            limit: 3,
-          },
           title: 'Natural History Observations',
+          name: 'Markdown',
+          standalone: true,
+          props: {
+            markdown:
+              'To view the observations, click on a mark on the timeline.',
+          },
+        },
+        {
+          name: 'TimelinePlot',
+          outsideContainerClassName: 'home-spacer',
+          props: {
+            sql: observationsSql,
+            sqlOperator: ColumnSingleValueFilterOperator.EQUAL,
+          },
           tableSqlKeys: ['resourceId'],
           columnName: 'resourceId',
         },
+        // {
+        //   name: 'CardContainerLogic',
+        //   props: {
+        //     sql: `${observationsSql} WHERE observationTime IS NOT NULL ORDER BY observationTime DESC`,
+        //     type: SynapseConstants.OBSERVATION_CARD,
+        //     limit: 3,
+        //   },
+        //   title: 'Natural History Observations',
+        //   tableSqlKeys: ['resourceId'],
+        //   columnName: 'resourceId',
+        // },
         {
           name: 'CardContainerLogic',
           props: {

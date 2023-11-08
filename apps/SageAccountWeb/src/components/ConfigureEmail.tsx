@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { SynapseClient, Typography } from 'synapse-react-client'
-import { displayToast } from 'synapse-react-client/dist/containers/ToastMessage'
-import { useSynapseContext } from 'synapse-react-client/dist/utils/SynapseContext'
-import { getSearchParam, hexDecodeAndDeserialize } from 'URLUtils'
+import {
+  displayToast,
+  SynapseClient,
+  SynapseQueries,
+  useSynapseContext,
+} from 'synapse-react-client'
+import { getSearchParam, hexDecodeAndDeserialize } from '../URLUtils'
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
+  Divider,
+  FormControlLabel,
   IconButton,
   InputLabel,
   TextField,
-  FormControlLabel,
-  Checkbox,
-  Divider,
+  Typography,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/DeleteTwoTone'
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone'
 import { StyledFormControl } from './StyledComponents'
-import {
-  useGetCurrentUserProfile,
-  useGetNotificationEmail,
-} from 'synapse-react-client/dist/utils/hooks/SynapseAPI'
 
 export type ConfigureEmailProps = {
   returnToPath: string
@@ -29,9 +29,9 @@ export type ConfigureEmailProps = {
 export const ConfigureEmail = (props: ConfigureEmailProps) => {
   const { accessToken } = useSynapseContext()
   const { data: currentProfile, refetch: refetchCurrentProfile } =
-    useGetCurrentUserProfile()
+    SynapseQueries.useGetCurrentUserProfile()
   const { data: primaryEmail, refetch: refetchNotificationEmail } =
-    useGetNotificationEmail()
+    SynapseQueries.useGetNotificationEmail()
   const [newEmail, setNewEmail] = useState('')
   const sendEmailNotifications =
     currentProfile?.notificationSettings?.sendEmailNotifications ?? true

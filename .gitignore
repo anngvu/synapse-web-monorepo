@@ -15,12 +15,13 @@ coverage/
 build/
 *.tsbuildinfo
 
+.eslintcache
+
 # docs build
 /styleguide
 
 # misc
 .DS_Store
-.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -42,3 +43,5 @@ apps/*/dist
 packages/*/dist
 storybook-static/
 src/umd
+
+build-storybook.log

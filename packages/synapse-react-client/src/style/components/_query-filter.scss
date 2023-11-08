@@ -1,0 +1,12 @@
+@use '../abstracts/variables' as SRC;
+@use 'sass:map';
+
+.FacetFilterControls {
+  padding-top: 18px;
+  &__facet {
+    margin: 10px 0 20px;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}

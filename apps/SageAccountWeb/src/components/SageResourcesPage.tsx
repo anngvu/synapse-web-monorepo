@@ -1,18 +1,17 @@
 import React from 'react'
-import { Grid, Paper, Box } from '@mui/material'
-import { Typography } from 'synapse-react-client'
-import ShowMore from 'synapse-react-client/dist/containers/row_renderers/utils/ShowMore'
-import { IconButton } from '@mui/material'
-import theme from 'style/theme'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { Box, Grid, Paper, Typography, useTheme } from '@mui/material'
+import { ShowMore } from 'synapse-react-client'
 import { useHistory } from 'react-router-dom'
 import { StyledOuterContainer } from './StyledComponents'
-import { useSourceApp, useSourceAppConfigs } from './SourceApp'
+import { BackButton } from './BackButton'
+import { useSourceAppConfigs } from './useSourceAppConfigs'
+import { useSourceApp } from './useSourceApp'
 
 export type SageResourcesPageProps = {}
 
 export const SageResourcesPage = (props: SageResourcesPageProps) => {
   const history = useHistory()
+  const theme = useTheme()
   const sourceAppConfigs = useSourceAppConfigs()
   const sageSourceAppConfig = useSourceApp('SAGE')
   return (
@@ -22,28 +21,20 @@ export const SageResourcesPage = (props: SageResourcesPageProps) => {
         sx={{
           margin: '0 auto',
           width: '900px',
-          backgroundColor: '#FFF',
-          boxShadow: '0px 2px 6px rgba(53, 58, 63, 0.1)',
-          borderRadius: '5px',
         }}
       >
-        <IconButton
-          onClick={() => {
-            history.goBack()
-          }}
-          sx={{
-            position: 'absolute',
-            top: theme.spacing(1.5),
-            left: theme.spacing(1.5),
-          }}
-        >
-          <ArrowBackIcon />
-        </IconButton>
         <Box
           sx={{
-            padding: '40px',
+            px: theme.spacing(8),
+            paddingTop: theme.spacing(8),
+            position: 'relative',
           }}
         >
+          <BackButton
+            onClick={() => {
+              history.goBack()
+            }}
+          />
           <Box
             sx={{
               backgroundColor: '#3959790D',
@@ -53,21 +44,21 @@ export const SageResourcesPage = (props: SageResourcesPageProps) => {
           >
             <div className="SageLogo">{sageSourceAppConfig?.logo}</div>
             <Typography
-              variant="body1"
+              variant="subtitle1"
               sx={{ marginTop: '30px', paddingBottom: '30px', fontWeight: 500 }}
             >
               Your Sage Account gets you access to all these tools.
             </Typography>
 
             <Typography
-              variant="body2"
+              variant="body1"
               sx={{ paddingBottom: '30px', fontWeight: 500 }}
             >
               Sage Bionetworks creates resources to help speed the translation
               of science into medicine.
             </Typography>
             <Typography
-              variant="body2"
+              variant="body1"
               sx={{ paddingBottom: '30px', fontWeight: 500 }}
             >
               Your Sage Account can be used across all these different products.
@@ -78,7 +69,8 @@ export const SageResourcesPage = (props: SageResourcesPageProps) => {
         </Box>
         <Box
           sx={{
-            padding: '0px 30px',
+            px: theme.spacing(8),
+            py: theme.spacing(0),
           }}
         >
           <Grid container spacing={5} mx={{ paddingTop: '20px' }}>
@@ -93,7 +85,7 @@ export const SageResourcesPage = (props: SageResourcesPageProps) => {
                   >
                     <a href={config.appURL}>{config.logo}</a>
                     <Typography
-                      variant="body2"
+                      variant="body1"
                       sx={{ paddingBottom: '30px', fontWeight: 500 }}
                     >
                       <ShowMore summary={config.description} />

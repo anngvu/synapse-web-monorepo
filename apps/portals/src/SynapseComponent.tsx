@@ -1,11 +1,11 @@
 import React from 'react'
 import {
+  SynapseComponents,
   SynapseContextConsumer,
   SynapseContextType,
-} from 'synapse-react-client/dist/utils/SynapseContext'
-import { SynapseConfig } from 'types/portal-config'
-import PortalComponents from 'portal-components'
-import { SynapseComponents } from 'synapse-react-client'
+} from 'synapse-react-client'
+import { SynapseConfig } from './types/portal-config'
+import PortalComponents from './portal-components'
 
 type SynapseComponentProps = {
   synapseConfig: SynapseConfig
@@ -42,9 +42,8 @@ export const SynapseComponent: React.FC<SynapseComponentWithContextProps> = ({
 }) => {
   // return the synapse object but with token/search params injected into its props from the context created in AppInitializer
   const { props, ...rest } = synapseConfig
-  const key = JSON.stringify(props)
   return (
-    <SynapseContextConsumer key={key}>
+    <SynapseContextConsumer>
       {(ctx?: SynapseContextType) => {
         const propsWithSearchAndToken = {
           ...props,

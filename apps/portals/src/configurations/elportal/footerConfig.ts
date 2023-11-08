@@ -1,7 +1,7 @@
 import { FooterConfig } from 'types/portal-config'
 
 const footer: FooterConfig = {
-  about: 'https://help.adknowledgeportal.org/apd/About.1994096680.html',
+  contactUs: 'https://sagebionetworks.jira.com/servicedesk/customer/portal/12',
 }
 
 export default footer

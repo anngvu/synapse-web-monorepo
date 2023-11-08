@@ -1,13 +1,13 @@
 import { SynapseConfig } from 'types/portal-config'
 import { DetailsPageProps } from 'types/portal-util-types'
 import { SynapseConstants } from 'synapse-react-client'
-import { CardConfiguration } from 'synapse-react-client/dist/containers/CardContainerLogic'
+import type { CardConfiguration } from 'synapse-react-client'
 import studyHeaderSvg from '../style/study-header.svg'
 import { studiesSql, dataSql, dataOnStudiesPageSql } from '../resources'
 import {
   ColumnMultiValueFunction,
   ColumnSingleValueFilterOperator,
-} from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
+} from '@sage-bionetworks/synapse-types'
 
 const rgbIndex = 0
 export const studyCardConfiguration: CardConfiguration = {
@@ -151,7 +151,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
             allowCategories: [],
             // mailChimpListName: 'study specific list name????',
             // mailChimpUrl:'https://study specific url????'
-            viewAllNewsButtonText: 'VIEW ALL DATA UPDATES',
+            viewAllNewsButtonText: 'View All Data Updates',
           },
         },
         {
@@ -174,6 +174,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
             rgbIndex,
             name: 'Metadata Files',
             visibleColumnCount: 10,
+            isRowSelectionVisible: true,
             tableConfiguration: {
               showAccessColumn: true,
               showDownloadColumn: true,
@@ -196,6 +197,7 @@ export const studiesDetailsPageProps: DetailsPageProps = {
             sqlOperator: ColumnMultiValueFunction.HAS,
             rgbIndex,
             visibleColumnCount: 10,
+            isRowSelectionVisible: true,
             tableConfiguration: {
               showAccessColumn: true,
               showDownloadColumn: true,

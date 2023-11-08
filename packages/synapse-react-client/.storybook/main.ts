@@ -1,15 +1,18 @@
 import { mergeConfig, defineConfig } from 'vite'
 import { StorybookConfig } from '@storybook/react-vite'
+import turbosnap from 'vite-plugin-turbosnap'
 
 const config: StorybookConfig = {
-  stories: [
-    '../stories/**/*.stories.mdx',
-    '../stories/**/*.stories.@(js|jsx|ts|tsx)',
-  ],
+  stories: ['../**/*.stories.mdx', '../**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
+    {
+      name: '@storybook/addon-styling',
+      options: {},
+    },
+    'storybook-addon-designs',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -45,13 +48,16 @@ const config: StorybookConfig = {
   },
   staticDirs: ['../public'],
   async viteFinal(config, { configType }) {
-    let base = undefined
+    let base,
+      plugins = undefined
     // Fix deployment to github pages
     if (configType === 'PRODUCTION') {
       base = './'
+      plugins = [turbosnap({ rootDir: config.root ?? process.cwd() })]
     }
     const customStorybookConfig = defineConfig({
       base,
+      plugins,
     })
 
     // return the customized config

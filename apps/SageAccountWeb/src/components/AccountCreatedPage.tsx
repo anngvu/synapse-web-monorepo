@@ -1,11 +1,13 @@
 import React from 'react'
-import { useSourceApp, SourceAppLogo, useSourceAppConfigs } from './SourceApp'
-import { Button, Link, Grid } from '@mui/material'
-import { AppContextConsumer } from 'AppContext'
-import { Typography } from 'synapse-react-client'
+import { SourceAppLogo } from './SourceApp'
+import { Button, Grid, Link, Typography } from '@mui/material'
+import { AppContextConsumer } from '../AppContext'
 import { Link as RouterLink } from 'react-router-dom'
 import { LeftRightPanel } from './LeftRightPanel'
-import useMembershipInvitationTokenHandler from 'hooks/useMembershipInvitationTokenHandler'
+import useMembershipInvitationTokenHandler from '../hooks/useMembershipInvitationTokenHandler'
+import { useSourceApp } from './useSourceApp'
+import { useSourceAppConfigs } from './useSourceAppConfigs'
+
 export type AccountCreatedPageProps = {}
 
 export const AccountCreatedPage = (props: AccountCreatedPageProps) => {
@@ -28,11 +30,11 @@ export const AccountCreatedPage = (props: AccountCreatedPageProps) => {
                 >
                   <strong>Welcome to {sourceApp?.friendlyName}!</strong>
                 </Typography>
-                <Typography variant="body2" sx={{ paddingBottom: '10px' }}>
+                <Typography variant="body1" sx={{ paddingBottom: '10px' }}>
                   You’ve created a Sage Account, which you can use on the{' '}
                   {sourceApp?.friendlyName}.
                 </Typography>
-                <Typography variant="body2" sx={{ paddingBottom: '30px' }}>
+                <Typography variant="body1" sx={{ paddingBottom: '30px' }}>
                   For full access to data and other functionality, we’ll need
                   additional information to verify your identity and certify you
                   to upload data.
@@ -65,7 +67,7 @@ export const AccountCreatedPage = (props: AccountCreatedPageProps) => {
                     Take me to {sourceApp?.friendlyName}
                   </Button>
                 )}
-                <Typography variant="body2" sx={{ paddingBottom: '30px' }}>
+                <Typography variant="body1" sx={{ paddingBottom: '30px' }}>
                   <Link
                     color="primary"
                     component={RouterLink}
@@ -90,7 +92,7 @@ export const AccountCreatedPage = (props: AccountCreatedPageProps) => {
                   Your <strong>Sage Account</strong> can also be used to access
                   all these resources.
                 </Typography>
-                <Typography variant="body2" sx={{ paddingBottom: '10px' }}>
+                <Typography variant="body1" sx={{ paddingBottom: '10px' }}>
                   <Link
                     color="primary"
                     component={RouterLink}

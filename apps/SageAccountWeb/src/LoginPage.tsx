@@ -1,48 +1,100 @@
-import * as React from 'react'
-import { RouteComponentProps, withRouter } from 'react-router-dom'
-import { Typography } from 'synapse-react-client'
-import StandaloneLoginForm from 'synapse-react-client/dist/containers/auth/StandaloneLoginForm'
-import { SourceAppDescription, SourceAppLogo } from './components/SourceApp'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
+import {
+  LoginMethod,
+  StandaloneLoginForm,
+  SynapseConstants,
+  SystemUseNotification,
+  preparePostSSORedirect,
+  redirectAfterSSO,
+  useLastLoginInfoState,
+  useApplicationSessionContext,
+} from 'synapse-react-client'
+import { backButtonSx } from './components/BackButton.js'
+import { SourceAppDescription, SourceAppLogo } from './components/SourceApp.js'
 import {
   StyledInnerContainer,
   StyledOuterContainer,
-} from 'components/StyledComponents'
-import { useTwoFactorAuthSSOContext } from './TwoFactorAuthSSOContext'
-import {
-  preparePostSSORedirect,
-  redirectAfterSSO,
-} from 'synapse-react-client/dist/utils/AppUtils'
+} from './components/StyledComponents.js'
+import { useSourceApp } from './components/useSourceApp'
 
-export type OwnProps = {
-  returnToUrl: string
+export type LoginPageProps = {
+  returnToUrl?: string
 }
-export type LoginPageProps = OwnProps & RouteComponentProps
+
+function getLoginMethodByProviderQueryParam(providerQueryParam: string | null) {
+  for (const [key, value] of Object.entries(
+    SynapseConstants.OAUTH2_PROVIDERS,
+  )) {
+    if (providerQueryParam === value) {
+      return key as LoginMethod
+    }
+  }
+  // if there isn't a provider query param, then assume logged in via email
+  return SynapseConstants.LOGIN_METHOD_EMAIL
+}
+
+function getLoginMethod(window: Window) {
+  const provider = new URLSearchParams(window.location.search).get('provider')
+  return getLoginMethodByProviderQueryParam(provider)
+}
 
 function LoginPage(props: LoginPageProps) {
   const { returnToUrl } = props
-  const { twoFactorAuthErrorResponse } = useTwoFactorAuthSSOContext()
+  const { refreshSession, twoFactorAuthSSOErrorResponse } =
+    useApplicationSessionContext()
+  const history = useHistory()
+  const sourceApp = useSourceApp()
+  const {
+    lastLoginDateState,
+    lastLoginMethodState,
+    lastLoginSourceAppNameState,
+    lastLoginSourceAppURLState,
+  } = useLastLoginInfoState()
 
   return (
     <StyledOuterContainer>
       <StyledInnerContainer>
-        <Box sx={{ py: 10, px: 8, height: '100%', position: 'relative' }}>
-          <Box sx={{ minHeight: '530px' }}>
+        <Box
+          sx={{
+            py: 10,
+            px: 8,
+            height: '100%',
+            position: 'relative',
+            [`.${SynapseConstants.LOGIN_BACK_BUTTON_CLASS_NAME}`]: backButtonSx,
+          }}
+        >
+          <Box
+            sx={{
+              minHeight: '600px',
+            }}
+          >
             <div className={'panel-logo'}>
               <SourceAppLogo />
             </div>
-            <StandaloneLoginForm
-              sessionCallback={() => {
-                redirectAfterSSO(returnToUrl)
-              }}
-              registerAccountUrl={'/register1'}
-              resetPasswordUrl={'/resetPassword'}
-              onBeginOAuthSignIn={() => {
-                // save current route (so that we can go back here after SSO)
-                preparePostSSORedirect()
-              }}
-              twoFactorAuthenticationRequired={twoFactorAuthErrorResponse}
-            />
+            <Box sx={{ my: 4 }}>
+              <StandaloneLoginForm
+                sessionCallback={() => {
+                  if (sourceApp?.friendlyName && sourceApp.appURL) {
+                    lastLoginMethodState.set(getLoginMethod(window))
+                    lastLoginDateState.set(new Date().toISOString())
+                    lastLoginSourceAppNameState.set(sourceApp?.friendlyName)
+                    lastLoginSourceAppURLState.set(sourceApp?.appURL)
+                  }
+                  redirectAfterSSO(history, returnToUrl)
+                  // If we didn't redirect, refresh the session
+                  refreshSession()
+                }}
+                registerAccountUrl={'/register1'}
+                resetPasswordUrl={'/resetPassword'}
+                onBeginOAuthSignIn={() => {
+                  // save current route (so that we can go back here after SSO)
+                  preparePostSSORedirect()
+                }}
+                twoFactorAuthenticationRequired={twoFactorAuthSSOErrorResponse}
+              />
+            </Box>
           </Box>
         </Box>
         <Box
@@ -59,10 +111,11 @@ function LoginPage(props: LoginPageProps) {
             Sign in to your account
           </Typography>
           <SourceAppDescription />
+          <SystemUseNotification />
         </Box>
       </StyledInnerContainer>
     </StyledOuterContainer>
   )
 }
 
-export default withRouter(LoginPage)
+export default LoginPage

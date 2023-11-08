@@ -1,38 +1,46 @@
-import { CardContainerLogicProps } from 'synapse-react-client/dist/containers/CardContainerLogic'
-import { QueryWrapperProps } from 'synapse-react-client/dist/containers/QueryWrapper'
-import { UserCardProps } from 'synapse-react-client/dist/containers/UserCard'
-import { ExternalFileHandleLinkProps } from 'synapse-react-client/dist/containers/ExternalFileHandleLink'
-import { UpsetPlotProps } from 'synapse-react-client/dist/containers/UpsetPlot'
-import { SynapsePlotProps } from 'synapse-react-client/dist/containers/widgets/SynapsePlot'
-import { MarkdownSynapseProps } from 'synapse-react-client/dist/containers/markdown/MarkdownSynapse'
-import { GoalsProps } from 'synapse-react-client/dist/containers/home_page/goals/Goals'
-import { ProgramsProps } from 'synapse-react-client/dist/containers/home_page/programs/Programs'
-import { ResourcesProps } from 'synapse-react-client/dist/containers/home_page/resources/Resources'
-import { UserCardListRotateProps } from 'synapse-react-client/dist/containers/UserCardListRotate'
-import { SubsectionRowRendererProps } from 'synapse-react-client/dist/containers/SubsectionRowRenderer'
-import { SynapseFormSubmissionGridProps } from 'synapse-react-client/dist/containers/synapse_form_wrapper/SynapseFormSubmissionsGrid'
-import { QueryWrapperPlotNavProps } from 'synapse-react-client/dist/containers/query_wrapper_plot_nav/QueryWrapperPlotNav'
-import { SynapseFormWrapperProps } from 'synapse-react-client/dist/containers/synapse_form_wrapper/SynapseFormWrapper'
-import { ThemesPlotProps } from 'synapse-react-client/dist/containers/widgets/themes-plot/ThemesPlot'
-import { StatefulButtonControlWrapperProps } from 'portal-components/StatefulButtonControlWrapper'
+import {
+  CardContainerLogicProps,
+  DownloadCartPageProps,
+  ExternalFileHandleLinkProps,
+  FeaturedDataTabsProps,
+  GoalsProps,
+  MarkdownCollapseProps,
+  MarkdownSynapseProps,
+  OrientationBannerProps,
+  ProgramsProps,
+  QueryWrapperPlotNavProps,
+  QueryWrapperProps,
+  ResourcesProps,
+  RssFeedCardsProps,
+  StandaloneQueryWrapperProps,
+  SubsectionRowRendererProps,
+  SynapseFormSubmissionGridProps,
+  SynapseFormWrapperProps,
+  SynapsePlotProps,
+  TableFeedCardsProps,
+  ThemesPlotProps,
+  UpsetPlotProps,
+  UserCardListGroupsProps,
+  UserCardListRotateProps,
+  UserCardProps,
+  ChallengeDataDownloadProps,
+  TimelinePlotProps,
+} from 'synapse-react-client'
 import { RouteControlWrapperProps } from '../portal-components/RouteControlWrapper'
 import { HomePageCardContainerProps } from '../portal-components/csbc-home-page/HomePageCardContainer'
 import { AboutPortalProps } from '../portal-components/csbc-home-page/AboutPortal'
 import { EcosystemProps } from '../portal-components/csbc-home-page/Ecosystem'
 import { DetailsPageProps } from './portal-util-types'
-import { StandaloneQueryWrapperProps } from 'synapse-react-client/dist/containers/table/StandaloneQueryWrapper'
 import { ParticipantsBarPlotProps } from '../portal-components/crc-researcher/ParticipantsBarPlot'
 import { StatusLineChartProps } from '../portal-components/crc-researcher/StatusLineChart'
-import { SurveysCompletedPlotsProps } from 'portal-components/crc-researcher/SurveysCompletedPlots'
-import { ImageProps } from 'portal-components/Image'
-import { RssFeedCardsProps } from 'synapse-react-client/dist/containers/RssFeedCards'
-import { FeaturedDataTabsProps } from 'synapse-react-client/dist/containers/home_page/featured-data/FeaturedDataTabs'
-import { UserCardListGroupsProps } from 'synapse-react-client/dist/containers/home_page/people/UserCardListGroups'
-import { TableFeedCardsProps } from 'synapse-react-client/dist/containers/TableFeedCards'
+import { SurveysCompletedPlotsProps } from '../portal-components/crc-researcher/SurveysCompletedPlots'
+import { ImageProps } from '../portal-components/Image'
 import { RedirectProps } from 'react-router-dom'
-import { MarkdownCollapseProps } from 'synapse-react-client/dist/containers/MarkdownCollapse'
-import { DownloadListActionsRequiredProps } from 'synapse-react-client/dist/containers/download_list_v2/DownloadListActionsRequired'
-import { ToggleSynapseObjectsProps } from 'portal-components/ToggleSynapseObjects'
+import { ToggleSynapseObjectsProps } from '../portal-components/ToggleSynapseObjects'
+import { CSSProperties } from 'react'
+import { TabbedSynapseObjectsProps } from 'portal-components/TabbedSynapseObjects'
+import { ChallengeSubmissionWrapperProps } from 'portal-components/challengeportal/ChallengeSubmissionWrapper'
+import { RedirectToURLProps } from 'portal-components/RedirectToURL'
 
 // For styling the header on the home page -- the main title and the summary text
 export type HomePageHeaderConfig = {
@@ -94,11 +102,6 @@ type Resources = {
   props: ResourcesProps
 }
 
-type StatefulButtonControl = {
-  name: 'StatefulButtonControlWrapper'
-  props: StatefulButtonControlWrapperProps
-}
-
 type RouteControl = {
   name: 'RouteControlWrapper'
   props: RouteControlWrapperProps
@@ -126,7 +129,7 @@ type HomePageCardContainer = {
 
 type DownloadCartPage = {
   name: 'DownloadCartPage'
-  props: DownloadListActionsRequiredProps
+  props: DownloadCartPageProps
 }
 
 type Ecosystem = {
@@ -153,7 +156,10 @@ type NFSurveyToast = {
   name: 'NFSurveyToast'
   props: undefined
 }
-
+type ELBetaLaunchBanner = {
+  name: 'ELBetaLaunchBanner'
+  props: undefined
+}
 type ARKWelcomePage = {
   name: 'ARKWelcomePage'
   props: undefined
@@ -179,6 +185,14 @@ type SynapsePlot = {
   name: 'SynapsePlot'
   props: SynapsePlotProps
 }
+type ChallengeParticipantGoogleMap = {
+  name: 'ChallengeParticipantGoogleMap'
+  props: undefined
+}
+type ProjectDiscussionForum = {
+  name: 'ProjectDiscussionForum'
+  props: undefined
+}
 type UserCardListRotate = {
   name: 'UserCardListRotate'
   props: UserCardListRotateProps
@@ -191,7 +205,18 @@ type Image = {
   name: 'Image'
   props: ImageProps
 }
-
+type ChallengeDetailPageWrapper = {
+  name: 'ChallengeDetailPageWrapper'
+  props: undefined
+}
+type ChallengeDataDownload = {
+  name: 'ChallengeDataDownload'
+  props: ChallengeDataDownloadProps
+}
+type ChallengeSubmissionWrapper = {
+  name: 'ChallengeSubmissionWrapper'
+  props: ChallengeSubmissionWrapperProps
+}
 type FeaturedDataTabs = {
   name: 'FeaturedDataTabs'
   props: FeaturedDataTabsProps
@@ -204,13 +229,17 @@ type ToggleSynapseObjects = {
   name: 'ToggleSynapseObjects'
   props: ToggleSynapseObjectsProps
 }
+type TabbedSynapseObjects = {
+  name: 'TabbedSynapseObjects'
+  props: TabbedSynapseObjectsProps
+}
 
 type Metadata = {
   title?: string
   centerTitle?: boolean
   subtitle?: string
   link?: string
-  style?: React.CSSProperties
+  style?: CSSProperties
   isOutsideContainer?: boolean
   // applied to the inner most container of the object
   className?: string
@@ -249,9 +278,24 @@ type SurveysCompletedPlots = {
   props: SurveysCompletedPlotsProps
 }
 
+type OrientationBanner = {
+  name: 'OrientationBanner'
+  props: OrientationBannerProps
+}
+
+type TimelinePlot = {
+  name: 'TimelinePlot'
+  props: TimelinePlotProps
+}
+
 type RedirectWithQuery = {
   name: 'RedirectWithQuery'
   props: RedirectProps
+}
+
+type RedirectToURL = {
+  name: 'RedirectToURL'
+  props: RedirectToURLProps
 }
 
 type Redirect = {
@@ -265,9 +309,9 @@ type Header = {
 }
 
 export type SynapseConfig = (
+  | RedirectToURL
   | RedirectWithQuery
   | Redirect
-  | StatefulButtonControl
   | RouteControl
   | CardContainerLogic
   | QueryWrapper
@@ -304,10 +348,19 @@ export type SynapseConfig = (
   | DownloadCartPage
   | BrowseToolsPage
   | NFSurveyToast
+  | ELBetaLaunchBanner
   | ARKWelcomePage
   | SubsectionRowRenderer
   | ToggleSynapseObjects
+  | TabbedSynapseObjects
+  | ChallengeParticipantGoogleMap
+  | ProjectDiscussionForum
+  | OrientationBanner
   | Header
+  | ChallengeDetailPageWrapper
+  | ChallengeDataDownload
+  | ChallengeSubmissionWrapper
+  | TimelinePlot
 ) &
   Metadata
 
@@ -343,13 +396,6 @@ export type FooterConfig = {
   about?: string
 }
 // Footer end
-
-// DocTitleConfig - start
-export type DocTitleConfig = {
-  name: string
-  description: string
-}
-// DocTitleConfig - end
 
 // LogoConfig
 export type LogoConfig = {

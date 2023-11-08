@@ -1,6 +1,6 @@
 import { SynapseConfig } from 'types/portal-config'
 import { SynapseConstants } from 'synapse-react-client'
-import { publicationsSql } from '../resources'
+import { defaultSearchConfiguration, publicationsSql } from '../resources'
 
 const rgbIndex = 5
 
@@ -8,22 +8,11 @@ export const publicationCardProps = {
   type: SynapseConstants.GENERIC_CARD,
   genericCardSchema: {
     type: SynapseConstants.PUBLICATION,
-    title: 'title',
-    subTitle: 'authors',
+    title: 'Name',
+    subTitle: 'Authors',
     link: 'DOI',
-    secondaryLabels: [
-      'year',
-      'journal',
-      'Program',
-      'grant',
-      'DOI',
-      'pubmed_id',
-    ],
+    secondaryLabels: ['Year', 'Journal', 'Program', 'Grant', 'DOI', 'PubmedId'],
   },
-}
-
-const columnAliases = {
-  pubmed_id: 'Pubmed ID',
 }
 
 const publications: SynapseConfig = {
@@ -33,9 +22,9 @@ const publications: SynapseConfig = {
     sql: publicationsSql,
     name: 'Publications',
     shouldDeepLink: true,
-    facetsToPlot: ['Program', 'year', 'grant', 'journal'],
+    facetsToPlot: ['Program', 'Year', 'Grant', 'Journal'],
     cardConfiguration: publicationCardProps,
-    columnAliases,
+    searchConfiguration: defaultSearchConfiguration,
   },
 }
 

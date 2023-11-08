@@ -1,8 +1,8 @@
-import { FooterConfig } from 'types/portal-config'
+import { SynapseConstants } from 'synapse-react-client'
+import { FooterConfig } from '../types/portal-config'
 
 const footer: FooterConfig = {
-  termsOfService:
-    'https://s3.amazonaws.com/static.synapse.org/governance/SageBionetworksSynapseTermsandConditionsofUse.pdf?v=5',
+  termsOfService: SynapseConstants.URL_TERMS_CONDITIONS_AGREEMENT,
   contactUs: 'mailto:',
 }
 

@@ -1,35 +1,30 @@
 import { cloneDeep, Dictionary } from 'lodash'
 import pluralize from 'pluralize'
-import * as React from 'react'
+import React from 'react'
 import { useState } from 'react'
 import { BarLoader } from 'react-spinners'
 import {
+  RegularExpressions,
   SynapseConstants,
   SynapseQueries,
-  Typography,
+  IconSvg,
+  SynapseUtilityFunctions,
 } from 'synapse-react-client'
-import IconSvg from 'synapse-react-client/dist/containers/IconSvg'
-import { LockedColumn } from 'synapse-react-client/dist/containers/QueryContext'
-import { SYNAPSE_ENTITY_ID_REGEX } from 'synapse-react-client/dist/utils/functions/RegularExpressions'
-import {
-  generateQueryFilterFromSearchParams,
-  parseEntityIdFromSqlStatement,
-} from 'synapse-react-client/dist/utils/functions/sqlFunctions'
-import { useGetEntityHeaders } from 'synapse-react-client/dist/utils/hooks/SynapseAPI/entity/useGetEntityHeaders'
+import type { LockedColumn } from 'synapse-react-client'
 import {
   ColumnType,
   ColumnTypeEnum,
   QueryBundleRequest,
   QueryResultBundle,
-} from 'synapse-react-client/dist/utils/synapseTypes/'
-import { Tooltip } from '@mui/material'
-import { SynapseComponent } from 'SynapseComponent'
-import { SynapseConfig } from 'types/portal-config'
+} from '@sage-bionetworks/synapse-types'
+import { Tooltip, Typography } from '@mui/material'
+import { SynapseComponent } from '../../SynapseComponent'
+import { SynapseConfig } from '../../types/portal-config'
 import {
   DetailsPageProps,
   ResolveSynId,
   RowSynapseConfig,
-} from 'types/portal-util-types'
+} from '../../types/portal-util-types'
 import injectPropsIntoConfig from '../injectPropsIntoConfig'
 import ToggleSynapseObjects from '../ToggleSynapseObjects'
 import DetailsPageTabs from './DetailsPageTabs'
@@ -86,7 +81,7 @@ function HeadlineWithLink(props: { title: string; id: string }) {
                 })
               }}
             >
-              <IconSvg icon="link" sx={{ paddingLeft: 10 }} />
+              <IconSvg icon="link" wrap={false} sx={{ pl: 1 }} />
             </div>
           </Tooltip>
         </span>
@@ -114,16 +109,23 @@ function HeadlineWithLink(props: { title: string; id: string }) {
  * @extends {React.Component<DetailsPageProps, State>}
  */
 export default function DetailsPage(props: DetailsPageProps) {
-  const { sql, searchParams = {}, sqlOperator, showMenu = true } = props
+  const {
+    sql,
+    searchParams = {},
+    sqlOperator,
+    showMenu = true,
+    additionalFiltersLocalStorageKey,
+  } = props
 
   useScrollOnMount()
 
   const queryBundleRequest = React.useMemo(() => {
-    const additionalFilters = generateQueryFilterFromSearchParams(
+    const entityId = SynapseUtilityFunctions.parseEntityIdFromSqlStatement(sql)
+    const additionalFilters = SynapseUtilityFunctions.getAdditionalFilters(
+      additionalFiltersLocalStorageKey ?? entityId,
       searchParams,
       sqlOperator,
     )
-    const entityId = parseEntityIdFromSqlStatement(sql)
     const queryBundleRequest: QueryBundleRequest = {
       entityId,
       concreteType: 'org.sagebionetworks.repo.model.table.QueryBundleRequest',
@@ -165,7 +167,7 @@ export default function DetailsPage(props: DetailsPageProps) {
           onClick={goToExplorePage}
           className="SRC-standard-button-shape SRC-primary-background-color SRC-whiteText"
         >
-          CONTINUE EXPLORING
+          Continue Exploring
         </button>
       </div>
     )
@@ -208,16 +210,16 @@ const SynapseObject: React.FC<{
 }> = ({ el, queryResultBundle }) => {
   const { columnName = '', resolveSynId, props, overrideSqlSourceTable } = el
   const deepCloneOfProps = cloneDeep(props)
-  const row = queryResultBundle!.queryResult!.queryResults.rows[0].values
+  const row = queryResultBundle.queryResult!.queryResults.rows[0].values
   const rowVersionNumber =
-    queryResultBundle!.queryResult!.queryResults.rows[0].versionNumber
+    queryResultBundle.queryResult!.queryResults.rows[0].versionNumber
 
   // map column name to index
   const mapColumnHeaderToRowIndex: Dictionary<{
     index: number
     columnType: ColumnType
   }> = {}
-  queryResultBundle!.queryResult!.queryResults.headers.forEach((el, index) => {
+  queryResultBundle.queryResult!.queryResults.headers.forEach((el, index) => {
     mapColumnHeaderToRowIndex[el.name] = { index, columnType: el.columnType }
   })
   const { index, columnType } = mapColumnHeaderToRowIndex[columnName] ?? {}
@@ -293,7 +295,7 @@ export const SplitStringToComponent: React.FC<{
 }) => {
   let value = splitString.trim()
   const valueIsSynId = React.useMemo(
-    () => !!SYNAPSE_ENTITY_ID_REGEX.exec(value),
+    () => !!RegularExpressions.SYNAPSE_ENTITY_ID_REGEX.exec(value),
     [value],
   )
 
@@ -304,9 +306,12 @@ export const SplitStringToComponent: React.FC<{
     columnName: columnName,
   }
 
-  const { data: entityHeaders } = useGetEntityHeaders([{ targetId: value }], {
-    enabled: valueIsSynId,
-  })
+  const { data: entityHeaders } = SynapseQueries.useGetEntityHeaders(
+    [{ targetId: value }],
+    {
+      enabled: valueIsSynId,
+    },
+  )
 
   if (resolveSynId) {
     // use entity name as either title or value according to resolveSynId
@@ -340,7 +345,12 @@ export const SplitStringToComponent: React.FC<{
   })
   if (overrideSqlSourceTable) {
     // use the search param value to override the sql param.
-    injectedProps['sql'] = `SELECT  *  FROM  ${value}.${rowVersionNumber}`
+    // TODO: Refactor to consider the the type of the original table
+    // For datasets and views, the rowVersionNumber corresponds to the actual version of the table. For TableEntities, the rowVersionNumber is meaningless. For now, just see if the columnName is `id`, which is always true for current view/dataset cases, and is never the case for current table cases.
+    //
+    injectedProps['sql'] = `SELECT  *  FROM  ${value}${
+      rowVersionNumber && columnName == 'id' ? `.${rowVersionNumber}` : ''
+    }`
   }
 
   // For explorer 2.0, cannot assign key `lockedColumn` to deepCloneOfProps due to type errors,

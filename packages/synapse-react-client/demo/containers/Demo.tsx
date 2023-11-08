@@ -1,13 +1,14 @@
-import * as React from 'react'
-import { SynapseVersion } from '../../src/lib/utils/synapseTypes/'
-import { SynapseClient } from '../../src/lib/utils/'
+import React from 'react'
+import { SynapseVersion } from '@sage-bionetworks/synapse-types'
+import { SynapseClient } from '../../src/utils/'
 import Uploader from './Uploader'
 import FileContentDownloadUploadDemo from './FileContentDownloadUploadDemo'
-import StatisticsPlot from '../../src/lib/containers/StatisticsPlot'
-import { testDownloadSpeed } from '../../src/lib/utils/functions/testDownloadSpeed'
-import { HasAccessV2 as HasAccess } from '../../src/lib/containers/access_requirements/HasAccessV2'
-import { SynapseContextProvider } from '../../src/lib/utils/SynapseContext'
-// import { useDetectSSOCode } from '../../src/lib/utils/hooks/useDetectSSOCode'
+import StatisticsPlot from '../../src/components/StatisticsPlot'
+import { testDownloadSpeed } from '../../src/utils/functions/testDownloadSpeed'
+import { HasAccessV2 as HasAccess } from '../../src/components/HasAccess/HasAccessV2'
+import { SynapseContextProvider } from '../../src/utils/context/SynapseContext'
+import FullContextProvider from '../../src/utils/context/FullContextProvider'
+// import { useDetectSSOCode } from '../../src/utils/hooks/useDetectSSOCode'
 
 type DemoState = {
   token: string | null
@@ -107,7 +108,7 @@ class Demo extends React.Component<DemoProps, DemoState> {
   public render(): JSX.Element {
     const { token, estimatedDownloadBytesPerSecond } = this.state
     return (
-      <SynapseContextProvider
+      <FullContextProvider
         synapseContext={{
           accessToken: this.state.token ?? undefined,
           isInExperimentalMode: SynapseClient.isInSynapseExperimentalMode(),
@@ -196,7 +197,7 @@ class Demo extends React.Component<DemoProps, DemoState> {
             </div>
           )}
         </div>
-      </SynapseContextProvider>
+      </FullContextProvider>
     )
   }
 }

@@ -1,34 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, Link, Container, Box, Grid, MenuItem } from '@mui/material'
 import {
-  UserBundle,
-  UserProfile,
-} from 'synapse-react-client/dist/utils/synapseTypes'
+  Box,
+  Button,
+  Container,
+  Grid,
+  InputLabel,
+  Link,
+  ListItemButton,
+  MenuItem,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material'
+import { UserBundle, UserProfile } from '@sage-bionetworks/synapse-types'
 import {
+  displayToast,
+  IconSvg,
   SynapseClient,
   SynapseConstants,
-  Typography,
+  TwoFactorAuthSettingsPanel,
+  useSynapseContext,
 } from 'synapse-react-client'
-import { Link as RouterLink } from 'react-router-dom'
-import { useSynapseContext } from 'synapse-react-client/dist/utils/SynapseContext'
-import { displayToast } from 'synapse-react-client/dist/containers/ToastMessage'
+import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
 import { ChangePassword } from './ChangePassword'
-import IconSvg from 'synapse-react-client/dist/containers/IconSvg'
-import { useHistory } from 'react-router-dom'
 import { ORCiDButton } from './ProfileValidation/ORCiDButton'
 import AccountSettingsTopBar from './AccountSettingsTopBar'
-import { useLocation } from 'react-router-dom'
 import { ConfigureEmail } from './ConfigureEmail'
 import { UnbindORCiDDialog } from './ProfileValidation/UnbindORCiD'
 import UniversalCookies from 'universal-cookie'
-import { DATETIME_UTC_COOKIE_KEY } from 'synapse-react-client/dist/utils/SynapseConstants'
-import { getUseUtcTimeFromCookie } from 'synapse-react-client/dist/utils/SynapseClient'
 import { StyledFormControl } from './StyledComponents'
 import { ProfileAvatar } from './ProfileAvatar'
-import { InputLabel } from '@mui/material'
-import { TextField } from '@mui/material'
-import { useSourceAppConfigs } from './SourceApp'
+import { useSourceAppConfigs } from './useSourceAppConfigs'
 
 const CompletionStatus: React.FC<{ isComplete: boolean | undefined }> = ({
   isComplete,
@@ -75,10 +78,12 @@ export const AccountSettings = () => {
   const timezoneRef = useRef<HTMLDivElement>(null)
   const emailAddressesRef = useRef<HTMLDivElement>(null)
   const trustCredentialRef = useRef<HTMLDivElement>(null)
+  const twoFactorAuthRef = useRef<HTMLDivElement>(null)
   const personalAccessTokenRef = useRef<HTMLDivElement>(null)
+  const oauthClientManagementRef = useRef<HTMLDivElement>(null)
   const cookies = new UniversalCookies()
   const [isUTCTime, setUTCTime] = useState<string>(
-    getUseUtcTimeFromCookie().toString(),
+    SynapseClient.getUseUtcTimeFromCookie().toString(),
   )
   const [isUTCTimeStaged, setUTCTimeStaged] = useState<string>(isUTCTime)
   const handleChangesFn = (val: string) => {
@@ -88,7 +93,7 @@ export const AccountSettings = () => {
     const current = new Date()
     const nextYear = new Date()
     nextYear.setFullYear(current.getFullYear() + 1)
-    cookies.set(DATETIME_UTC_COOKIE_KEY, isUTCTime, {
+    cookies.set(SynapseConstants.DATETIME_UTC_COOKIE_KEY, isUTCTime, {
       path: '/',
       expires: nextYear,
     })
@@ -176,37 +181,51 @@ export const AccountSettings = () => {
       <div className="panel-wrapper-bg with-account-setting">
         <Container maxWidth="md">
           <Box sx={{ display: 'flex', my: '60px' }}>
-            <nav className="account-setting-panel nav-panel">
-              <MenuItem onClick={() => handleScroll(profileInformationRef)}>
+            <Paper component="nav" className="account-setting-panel nav-panel">
+              <ListItemButton
+                onClick={() => handleScroll(profileInformationRef)}
+              >
                 Profile Information
-              </MenuItem>
-              <MenuItem onClick={() => handleScroll(emailAddressesRef)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => handleScroll(emailAddressesRef)}>
                 Email Addresses
-              </MenuItem>
-              <MenuItem onClick={() => handleScroll(changePasswordRef)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => handleScroll(changePasswordRef)}>
                 Change Password
-              </MenuItem>
-              <MenuItem onClick={() => handleScroll(timezoneRef)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => handleScroll(timezoneRef)}>
                 Date/Time Format
-              </MenuItem>
-              <MenuItem onClick={() => handleScroll(trustCredentialRef)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => handleScroll(trustCredentialRef)}>
                 Trust & Credentials
-              </MenuItem>
-              <MenuItem onClick={() => handleScroll(personalAccessTokenRef)}>
+              </ListItemButton>
+              <ListItemButton onClick={() => handleScroll(twoFactorAuthRef)}>
+                Two-factor Authentication (2FA)
+              </ListItemButton>
+              <ListItemButton
+                onClick={() => handleScroll(personalAccessTokenRef)}
+              >
                 Personal Access Tokens
-              </MenuItem>
-            </nav>
+              </ListItemButton>
+              <ListItemButton
+                onClick={() => handleScroll(oauthClientManagementRef)}
+              >
+                OAuth Clients
+              </ListItemButton>
+            </Paper>
 
             <div>
-              <div
+              <Paper
                 ref={profileInformationRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Profile Information</h3>
-                <p>
+                <Typography variant={'headline2'}>
+                  Profile Information
+                </Typography>
+                <Typography variant={'body1'}>
                   This information is reused across all{' '}
                   <RouterLink to="/sageresources">Sage products.</RouterLink>
-                </p>
+                </Typography>
                 <ProfileAvatar
                   userProfile={userProfile}
                   onProfileUpdated={() => {
@@ -376,27 +395,22 @@ export const AccountSettings = () => {
                       })}
                     </Grid>
                   </StyledFormControl>
-                  <StyledFormControl
+                  <TextField
                     fullWidth
-                    variant="standard"
                     margin="normal"
-                    sx={{ marginBottom: '10px' }}
-                  >
-                    <InputLabel shrink htmlFor="bio">
-                      Bio
-                    </InputLabel>
-                    <TextField
-                      id="bio"
-                      name="bio"
-                      fullWidth
-                      multiline
-                      onChange={e => setBio(e.target.value)}
-                      value={bio}
-                    />
-                  </StyledFormControl>
+                    label="Bio"
+                    id="bio"
+                    name="bio"
+                    multiline
+                    rows={5}
+                    onChange={e => setBio(e.target.value)}
+                    value={bio}
+                  />
                   <div className="primary-button-container">
                     <Button
-                      onClick={updateUserProfile}
+                      onClick={() => {
+                        updateUserProfile()
+                      }}
                       disabled={!changeInForm}
                       variant="contained"
                     >
@@ -404,26 +418,26 @@ export const AccountSettings = () => {
                     </Button>
                   </div>
                 </Form>
-              </div>
-              <div
+              </Paper>
+              <Paper
                 ref={emailAddressesRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Email Addresses</h3>
+                <Typography variant={'headline2'}>Email Addresses</Typography>
                 <ConfigureEmail returnToPath="authenticated/myaccount" />
-              </div>
-              <div
+              </Paper>
+              <Paper
                 ref={changePasswordRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Change Password</h3>
+                <Typography variant={'headline2'}>Change Password</Typography>
                 <ChangePassword />
-              </div>
-              <div
+              </Paper>
+              <Paper
                 ref={timezoneRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Date/Time Format</h3>
+                <Typography variant={'headline2'}>Date/Time Format</Typography>
                 <StyledFormControl
                   fullWidth
                   variant="standard"
@@ -460,29 +474,31 @@ export const AccountSettings = () => {
                     Update Preference
                   </Button>
                 </div>
-              </div>
+              </Paper>
 
-              <div
+              <Paper
                 ref={trustCredentialRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Trust & Credentials</h3>
-                <p>
+                <Typography variant={'headline2'}>
+                  Trust & Credentials
+                </Typography>
+                <Typography variant={'body1'}>
                   This section lists the various ways we support verifying your
                   trust and identity in order to permit access to our products.
                   You may be asked to complete any of the following as part of
                   requesting access within a system.
-                </p>
+                </Typography>
                 <div className="credential-partition">
                   <h4>Terms and Conditions for Use</h4>
                   <CompletionStatus isComplete={termsOfUse} />
-                  <p>
+                  <Typography variant={'body1'} sx={{ my: 1 }}>
                     <i>Required to register</i>
-                  </p>
-                  <p>
+                  </Typography>
+                  <Typography variant={'body1'} sx={{ my: 1 }}>
                     You must affirm your agreement to follow these terms and
                     conditions in order to create an account.{' '}
-                  </p>
+                  </Typography>
                   <div className="primary-button-container">
                     <Button
                       disabled={termsOfUse}
@@ -493,7 +509,7 @@ export const AccountSettings = () => {
                       Agree to Terms and Conditions
                     </Button>
                     <Link
-                      href="https://s3.amazonaws.com/static.synapse.org/governance/SageBionetworksSynapseTermsandConditionsofUse.pdf?v=5"
+                      href={SynapseConstants.URL_TERMS_CONDITIONS_AGREEMENT}
                       target="_blank"
                     >
                       More information
@@ -503,15 +519,15 @@ export const AccountSettings = () => {
                 <div className="credential-partition">
                   <h4>Certification</h4>
                   <CompletionStatus isComplete={isCertified} />
-                  <p>
+                  <Typography variant={'body1'} sx={{ my: 1 }}>
                     <i>Required to upload data.</i>
-                  </p>
-                  <p>
+                  </Typography>
+                  <Typography variant={'body1'} sx={{ my: 1 }}>
                     There are times where human data can only be shared with
                     certain restrictions. In order to upload data on any
                     application, you must pass a quiz on the technical and
                     ethical aspects of sharing data in our system.
-                  </p>
+                  </Typography>
                   <div className="primary-button-container">
                     <Button
                       disabled={isCertified}
@@ -582,13 +598,13 @@ export const AccountSettings = () => {
                       and data.
                     </i>
                   </p>
-                  <p>
+                  <Typography variant={'body1'} sx={{ my: 1 }}>
                     Profile validation requires you to complete your profile,
                     link an ORCID profile, sign and date the Synapse pledge, and
                     upload both the pledge and an identity attestation document,
                     after which your application will be manually reviewed
                     (which may take several days).
-                  </p>
+                  </Typography>
                   <div className="primary-button-container">
                     <Button
                       disabled={!!verified}
@@ -606,20 +622,38 @@ export const AccountSettings = () => {
                     </Link>
                   </div>
                 </div>
-              </div>
-              <div
+              </Paper>
+              <Paper
+                ref={twoFactorAuthRef}
+                className="account-setting-panel main-panel"
+              >
+                <TwoFactorAuthSettingsPanel
+                  onRegenerateBackupCodes={() => {
+                    history.push('/authenticated/2fa/generatecodes')
+                  }}
+                  onBeginTwoFactorEnrollment={() => {
+                    history.push('/authenticated/2fa/enroll')
+                  }}
+                />
+              </Paper>
+              <Paper
                 ref={personalAccessTokenRef}
                 className="account-setting-panel main-panel"
               >
-                <h3>Personal Access Tokens</h3>
-                <p>
+                <Typography variant={'headline2'}>
+                  Personal Access Tokens
+                </Typography>
+                <Typography variant={'body1'} sx={{ my: 1 }}>
                   You can issue personal access tokens to authenticate your
                   scripts with scoped access to your account. It is important
                   that you treat personal access tokens with the same security
                   as your password.
-                </p>
+                </Typography>
                 <div className="primary-button-container">
-                  <Link sx={credentialButtonSX}>
+                  <Link
+                    sx={credentialButtonSX}
+                    onClick={() => handleChangesFn('personalaccesstokens')}
+                  >
                     Manage Personal Access Tokens
                   </Link>
                   <Link
@@ -629,7 +663,31 @@ export const AccountSettings = () => {
                     More information
                   </Link>
                 </div>
-              </div>
+              </Paper>
+              <Paper
+                ref={oauthClientManagementRef}
+                className="account-setting-panel main-panel"
+              >
+                <Typography variant={'headline2'}>OAuth Clients</Typography>
+                <Typography variant={'body1'} sx={{ my: 1 }}>
+                  OAuth Clients can be created to develop applications that use
+                  Synapse as an identity provider.
+                </Typography>
+                <div className="primary-button-container">
+                  <Link
+                    sx={credentialButtonSX}
+                    onClick={() => handleChangesFn('oauthclientmanagement')}
+                  >
+                    Manage OAuth Clients
+                  </Link>
+                  <Link
+                    href="https://help.synapse.org/docs/Using-Synapse-as-an-OAuth-Server.2048327904.html"
+                    target="_blank"
+                  >
+                    More information
+                  </Link>
+                </div>
+              </Paper>
             </div>
           </Box>
         </Container>

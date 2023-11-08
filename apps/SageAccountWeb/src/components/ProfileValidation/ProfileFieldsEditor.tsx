@@ -1,20 +1,17 @@
-import { Box, InputLabel, TextField } from '@mui/material'
-import { StyledFormControl } from 'components/StyledComponents'
+import { Box, InputLabel, TextField, useTheme } from '@mui/material'
+import { StyledFormControl } from '../StyledComponents'
 import React, { useState } from 'react'
-
-import theme from 'style/theme'
-import { VerificationSubmission } from 'synapse-react-client/dist/utils/synapseTypes'
+import { VerificationSubmission } from '@sage-bionetworks/synapse-types'
 import { ContinueButton } from './ContinueButton'
 
 const keysToValidate = ['firstName', 'lastName', 'location', 'company']
 
 function validate(values: Partial<VerificationSubmission>) {
   const requiredError = 'This field cannot be empty.'
-  let errors = {}
-  const keys = Object.keys(values)
-  for (var key of keys) {
+  let errors: Record<string, string> = {}
+  for (const [key, value] of Object.entries(values)) {
     if (keysToValidate.includes(key)) {
-      if (!values[key]) {
+      if (!value) {
         errors[key] = requiredError
       }
     }
@@ -34,6 +31,7 @@ export type ProfileFieldsEditorProps = {
  * @returns
  */
 export const ProfileFieldsEditor = (props: ProfileFieldsEditorProps) => {
+  const theme = useTheme()
   const [values, setValues] = useState({ ...props.verificationSubmission })
   const [errors] = useState({} as Partial<VerificationSubmission>)
 

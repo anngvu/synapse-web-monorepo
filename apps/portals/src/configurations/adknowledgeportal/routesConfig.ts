@@ -1,38 +1,26 @@
 import { GenericRoute } from 'types/portal-config'
 import { SynapseConstants } from 'synapse-react-client'
-import {
-  projects,
-  studies,
-  data,
-  people,
-  programs,
-  publications,
-} from './synapseConfigs'
 import RouteControlWrapperProps from './routeControlWrapperProps'
 import {
-  studyCardConfiguration,
   studiesProgrammaticRouteConfig,
+  studyCardConfiguration,
 } from './synapseConfigs/studies'
 import {
   projectCardConfiguration,
   projectsDetailsPageConfiguration,
 } from './synapseConfigs/projects'
-import { results } from './synapseConfigs/results'
 import { programCardConfiguration } from './synapseConfigs/programs'
 import { programsHomePageConfig } from './synapseConfigs/programsHomePage'
-import experimentalTools from './synapseConfigs/experimental_tools'
-import computationalTools from './synapseConfigs/computational_tools'
-import targetEnablingResources from './synapseConfigs/target_enabling_resources'
 import {
   dataSql,
-  projectsSql,
-  studiesSql,
-  peopleSql,
-  programsSql,
   experimentalModelsSql,
   modelADStrainsSelectedFacet,
+  peopleSql,
+  programsSql,
+  projectsSql,
+  studiesSql,
 } from './resources'
-import { ColumnSingleValueFilterOperator } from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
+import { ColumnSingleValueFilterOperator } from '@sage-bionetworks/synapse-types'
 
 const routes: GenericRoute[] = [
   {
@@ -74,6 +62,7 @@ const routes: GenericRoute[] = [
                     selectFacetColumnValue: 'WGS_Harmonization',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn22264775',
+                    unitDescription: 'Files',
                   },
                   {
                     title: 'The RNAseq Harmonization Study',
@@ -84,6 +73,7 @@ const routes: GenericRoute[] = [
                     selectFacetColumnValue: 'RNAseq_Harmonization',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn21241740',
+                    unitDescription: 'Files',
                   },
                   {
                     title:
@@ -95,6 +85,7 @@ const routes: GenericRoute[] = [
                     selectFacetColumnValue: 'ROSMAP',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn3219045',
+                    unitDescription: 'Files',
                   },
                 ],
               },
@@ -115,6 +106,7 @@ const routes: GenericRoute[] = [
                     selectFacetColumnValue: 'UCI_5XFAD',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn16798076',
+                    unitDescription: 'Files',
                   },
                   {
                     title: 'The IU/Jax/Pitt MODEL-AD Levetiracetam 5XFAD Study',
@@ -122,9 +114,10 @@ const routes: GenericRoute[] = [
                       'This study provides pharmacokinetic, imaging, and behavior data on the 5XFAD mouse model dosed with levetiracetam.',
                     facetsToPlot: ['dataType', 'assay'],
                     selectFacetColumnName: 'study',
-                    selectFacetColumnValue: 'Jax.IU.Pitt_Levetiracetam-5XFAD',
+                    selectFacetColumnValue: 'Jax.IU.Pitt_Levetiracetam_5XFAD',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn21784897',
+                    unitDescription: 'Files',
                   },
                   {
                     title: 'The IU/Jax/Pitt MODEL-AD Verubecestat 5XFAD Study',
@@ -135,6 +128,7 @@ const routes: GenericRoute[] = [
                     selectFacetColumnValue: 'Jax.IU.Pitt_Verubecestat_5XFAD',
                     detailsPagePath:
                       '/Explore/Studies/DetailsPage?Study=syn21863375',
+                    unitDescription: 'Files',
                   },
                 ],
               },
@@ -180,7 +174,7 @@ const routes: GenericRoute[] = [
           size: SynapseConstants.MEDIUM_USER_CARD,
           useQueryResultUserData: true,
           summaryLink: 'Explore/People',
-          summaryLinkText: 'EXPLORE ALL PEOPLE',
+          summaryLinkText: 'Explore All People',
         },
       },
       {
@@ -242,32 +236,40 @@ const routes: GenericRoute[] = [
     ],
   },
   {
+    // PORTALS-2836: redirect /Explore/Programs/DetailsPage?Program=ELITE to the ELITE portal
+    exact: true,
+    path: 'Explore/Programs/DetailsPage',
+    hideRouteFromNavbar: true,
+    synapseConfigArray: [
+      {
+        name: 'RedirectToURL',
+        props: {
+          toURL: 'https://eliteportal.synapse.org/',
+          search: 'Program=ELITE',
+        },
+      },
+    ],
+  },
+  {
     path: 'Explore',
     routes: [
       {
-        path: 'Programs',
-        routes: [
+        path: ':slug/',
+        hideRouteFromNavbar: true,
+        exact: true,
+        synapseConfigArray: [
           {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                className: 'ProgramCardList',
-                props: {
-                  ...RouteControlWrapperProps,
-                  synapseConfig: {
-                    name: 'CardContainerLogic',
-                    props: {
-                      ...programs,
-                      sql: programsSql,
-                    },
-                  },
-                },
-              },
-            ],
+            name: 'RouteControlWrapper',
+            isOutsideContainer: true,
+            props: RouteControlWrapperProps,
           },
+        ],
+      },
+
+      {
+        path: 'Programs',
+        hideRouteFromNavbar: false,
+        routes: [
           {
             exact: true,
             path: 'DetailsPage',
@@ -323,21 +325,8 @@ const routes: GenericRoute[] = [
       },
       {
         path: 'Projects',
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...RouteControlWrapperProps,
-                  synapseConfig: projects,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             exact: true,
@@ -361,21 +350,8 @@ const routes: GenericRoute[] = [
       },
       {
         path: 'Studies',
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...RouteControlWrapperProps,
-                  synapseConfig: studies,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             routes: [
@@ -387,44 +363,17 @@ const routes: GenericRoute[] = [
       {
         exact: true,
         path: 'Data',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: data,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
         path: 'Publications',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: publications,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
         path: 'People',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: people,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
@@ -446,58 +395,22 @@ const routes: GenericRoute[] = [
       {
         exact: true,
         path: 'Experimental Models',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: experimentalTools,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
         path: 'Computational Tools',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: computationalTools,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
         path: 'Target Enabling Resources',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: targetEnablingResources,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         exact: true,
         path: 'Results',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...RouteControlWrapperProps,
-              synapseConfig: results,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
     ],
   },

@@ -5,7 +5,6 @@ Structure of the codebase
 <pre>
 ├── App.scss              # Main styling for the application, uses variables from test-configuration/_overrides.scss
 ├── App.tsx               # Main entry point with route configuration
-├── ButtonControl.tsx     # Explore buttons that are used both on the home page and the explore page
 ├── Footer.tsx            # Footer with contact us/terms of service
 ├── Header.tsx            # Home page header with summary and title
 ├── Home.tsx              # Home page
@@ -13,7 +12,7 @@ Structure of the codebase
 ├── RouteResolver.tsx     # For any subpage not in Home/Explore this hooks up the configuration to that URL
 ├── config                # The main configuration folder read for the app 
 ├── test-configuration    # Folder with an example config that gets used for testing
-├── index.tsx             # Boilerplate code that hooks the application up with index.html
+├── index.ts             # Boilerplate code that hooks the application up with index.html
 ├── portal-components     # portal specific components that are not related to layout
 ├── configurations        # folder containing all the portal configs
 ├── tests                 # all the tests for the application
@@ -28,7 +27,7 @@ Structure of test-configuration
 
 <pre>
 test-configuration/
-├── docTitleConfig.ts                       # Configure the document title
+├── .env                                    # Configure portal-specific environment variables, such as title and description
 ├── exploreHomeConfiguration                # Configure the data for explore and home page
 │   ├── data.ts                             
 │   ├── index.ts                            

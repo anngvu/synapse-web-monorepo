@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
-import { SynapseContextProvider } from 'synapse-react-client/dist/utils/SynapseContext'
-import { SynapseComponent } from 'SynapseComponent'
-import { SynapseConfig } from 'types/portal-config'
+import { SynapseComponent } from '../SynapseComponent'
+import { SynapseConfig } from '../types/portal-config'
+import { describe, it } from 'vitest'
+import { FullContextProvider } from 'synapse-react-client'
 
 describe('SynapseComponent tests', () => {
   it('renders SRC components correctly', () => {
@@ -14,53 +15,41 @@ describe('SynapseComponent tests', () => {
       },
     }
     render(
-      <SynapseContextProvider
+      <FullContextProvider
         synapseContext={{
           accessToken: 'abcd',
           utcTime: false,
           isInExperimentalMode: false,
-          downloadCartPageUrl: '/DownloadCart'
+          downloadCartPageUrl: '/DownloadCart',
         }}
       >
         <SynapseComponent synapseConfig={synapseConfig} />
-      </SynapseContextProvider>,
+      </FullContextProvider>,
     )
     screen.getByText('This is a markdown component')
   })
 
   it('renders portal specific components correctly', () => {
     const synapseConfig: SynapseConfig = {
-      name: 'StatefulButtonControlWrapper',
+      name: 'RouteControlWrapper',
       props: {
-        configs: [
-          {
-            name: 'mock2',
-            synapseConfigArray: [
-              {
-                name: 'Markdown',
-                props: {
-                  markdown: '## This is a markdown component',
-                },
-              },
-            ],
-          },
-        ],
+        customRoutes: [],
       },
     }
     render(
-      <SynapseContextProvider
+      <FullContextProvider
         synapseContext={{
           accessToken: 'abcd',
           utcTime: false,
           isInExperimentalMode: false,
-          downloadCartPageUrl: '/DownloadCart'
+          downloadCartPageUrl: '/DownloadCart',
         }}
       >
         <MemoryRouter>
           <SynapseComponent synapseConfig={synapseConfig} />
         </MemoryRouter>
-      </SynapseContextProvider>,
+      </FullContextProvider>,
     )
-    screen.getByText('This is a markdown component')
+    screen.getByText('Explore')
   })
 })

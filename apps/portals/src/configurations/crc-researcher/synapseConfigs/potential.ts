@@ -16,24 +16,25 @@ export const potential: SynapseConfig = {
     name: 'Potential Participants',
     columnAliases,
     facetsToPlot: allFacetsToPlot,
-    tableConfiguration: {
-      isRowSelectionVisible: true,
-    },
+    tableConfiguration: {},
+    isRowSelectionVisible: true,
     visibleColumnCount: 10,
     customControls: [
       {
         buttonText: 'Send lab invitation',
         classNames: 'exampleClassNameToAddToButton',
-        onClick: async (event) => {
+        onClick: (event) => {
           handleParticipantWorkflowChange(event, 'Invited')
         },
+        isRowSelectionSupported: true,
       },
       {
         buttonText: 'Move to uncategorized',
         classNames: 'exampleClassNameToAddToButton',
-        onClick: async (event) => {
+        onClick: (event) => {
           handleParticipantWorkflowChange(event, 'Uncategorized')
         },
+        isRowSelectionSupported: true,
       },
     ],
   },

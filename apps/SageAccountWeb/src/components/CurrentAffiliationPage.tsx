@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { useSourceApp, SourceAppLogo } from './SourceApp'
-import { Typography } from 'synapse-react-client'
-import { InputLabel, TextField } from '@mui/material'
+import { SourceAppLogo } from './SourceApp'
+import { InputLabel, TextField, Typography } from '@mui/material'
 import { LeftRightPanel } from './LeftRightPanel'
 import { StyledFormControl } from './StyledComponents'
-import { useGetCurrentUserProfile } from 'synapse-react-client/dist/utils/hooks/SynapseAPI'
-import { updateMyUserProfile } from 'synapse-react-client/dist/utils/SynapseClient'
-import { displayToast } from 'synapse-react-client/dist/containers/ToastMessage'
-import { useSynapseContext } from 'synapse-react-client/dist/utils/SynapseContext'
+import {
+  displayToast,
+  SynapseClient,
+  SynapseQueries,
+  useSynapseContext,
+} from 'synapse-react-client'
 import { Redirect } from 'react-router-dom'
 import { ContinueButton } from './ProfileValidation/ContinueButton'
+import { useSourceApp } from './useSourceApp'
 
 export const CurrentAffiliationPage = () => {
   const sourceApp = useSourceApp()
   const { accessToken } = useSynapseContext()
-  const { data: currentUserProfile } = useGetCurrentUserProfile()
+  const { data: currentUserProfile } = SynapseQueries.useGetCurrentUserProfile()
   const [newAffiliation, setNewAffiliation] = useState(
     currentUserProfile?.company,
   )
@@ -55,7 +57,10 @@ export const CurrentAffiliationPage = () => {
               onClick={() => {
                 if (currentUserProfile) {
                   currentUserProfile.company = newAffiliation
-                  updateMyUserProfile(currentUserProfile, accessToken)
+                  SynapseClient.updateMyUserProfile(
+                    currentUserProfile,
+                    accessToken,
+                  )
                     .then(() => {
                       // success!  go to the next page
                       setIsGoToAccountCreatedPage(true)

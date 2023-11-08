@@ -1,19 +1,10 @@
 import { GenericRoute } from 'types/portal-config'
 import { SynapseConstants } from 'synapse-react-client'
 import {
-  datasets,
-  files,
-  studies,
-  publications,
-  tools,
-  initiatives,
-  hackathons,
-} from './synapseConfigs'
-import {
   newStudiesSql,
-  studyHeaderIconOptions,
-  studyCardConfiguration,
   studiesDetailPage,
+  studyCardConfiguration,
+  studyHeaderIconOptions,
 } from './synapseConfigs/studies'
 import {
   hackathonCardConfiguration,
@@ -39,8 +30,8 @@ import {
   studiesSql,
 } from './resources'
 import { toolsDetailsPage } from './synapseConfigs/tools'
-import datasetsV2, { datasetsDetailsPage } from './synapseConfigs/datasetsV2'
-import { ColumnSingleValueFilterOperator } from 'synapse-react-client/dist/utils/synapseTypes/Table/QueryFilter'
+import { ColumnSingleValueFilterOperator } from '@sage-bionetworks/synapse-types'
+import { datasetsDetailsPage } from './synapseConfigs/datasets'
 
 const limit = 3
 
@@ -52,7 +43,6 @@ const routes: GenericRoute[] = [
       {
         name: 'NFSurveyToast',
         centerTitle: true,
-        outsideContainerClassName: 'home-spacer',
         props: undefined,
       },
     ],
@@ -94,7 +84,7 @@ const routes: GenericRoute[] = [
           size: SynapseConstants.LARGE_USER_CARD,
           useQueryResultUserData: true,
           // summaryLink: 'Explore/People',
-          // summaryLinkText: 'EXPLORE ALL PEOPLE',
+          // summaryLinkText: 'Explore All People',
         },
       },
       {
@@ -198,23 +188,21 @@ const routes: GenericRoute[] = [
     path: 'Explore',
     routes: [
       {
-        path: 'Initiatives',
-        routes: [
+        path: ':slug/',
+        hideRouteFromNavbar: true,
+        exact: true,
+        synapseConfigArray: [
           {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                outsideContainerClassName: 'container-fluid',
-                props: {
-                  ...routeControlWrapperProps,
-                  synapseConfig: initiatives,
-                },
-              },
-            ],
+            name: 'RouteControlWrapper',
+            isOutsideContainer: true,
+            props: routeControlWrapperProps,
           },
+        ],
+      },
+      {
+        path: 'Initiatives',
+        hideRouteFromNavbar: false,
+        routes: [
           {
             path: 'DetailsPage',
             exact: true,
@@ -243,21 +231,8 @@ const routes: GenericRoute[] = [
       },
       {
         path: 'Studies',
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...routeControlWrapperProps,
-                  synapseConfig: studies,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             routes: [
@@ -291,37 +266,9 @@ const routes: GenericRoute[] = [
         ],
       },
       {
-        exact: true,
         path: 'Datasets',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...routeControlWrapperProps,
-              synapseConfig: datasets,
-            },
-          },
-        ],
-      },
-      {
-        path: 'DatasetsV2',
-        hideRouteFromNavbar: true,
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...routeControlWrapperProps,
-                  synapseConfig: datasetsV2,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             exact: true,
@@ -330,50 +277,17 @@ const routes: GenericRoute[] = [
         ],
       },
       {
-        exact: true,
         path: 'Files',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...routeControlWrapperProps,
-              synapseConfig: files,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
-        exact: true,
         path: 'Publications',
-        synapseConfigArray: [
-          {
-            name: 'RouteControlWrapper',
-            isOutsideContainer: true,
-            props: {
-              ...routeControlWrapperProps,
-              synapseConfig: publications,
-            },
-          },
-        ],
+        hideRouteFromNavbar: false,
       },
       {
         path: 'Tools',
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...routeControlWrapperProps,
-                  synapseConfig: tools,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             exact: false,
@@ -384,21 +298,8 @@ const routes: GenericRoute[] = [
       {
         path: 'Hackathon',
         displayName: 'Hackathon Projects',
+        hideRouteFromNavbar: false,
         routes: [
-          {
-            path: '',
-            exact: true,
-            synapseConfigArray: [
-              {
-                name: 'RouteControlWrapper',
-                isOutsideContainer: true,
-                props: {
-                  ...routeControlWrapperProps,
-                  synapseConfig: hackathons,
-                },
-              },
-            ],
-          },
           {
             path: 'DetailsPage',
             exact: false,

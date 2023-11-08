@@ -57,24 +57,25 @@ export const uncategorized: SynapseConfig = {
     sql,
     name: 'Uncategorized Participants',
     columnAliases,
-    tableConfiguration: {
-      isRowSelectionVisible: true,
-    },
+    tableConfiguration: {},
+    isRowSelectionVisible: true,
     facetsToPlot: allFacetsToPlot,
     customControls: [
       {
         buttonText: 'Select as potential',
         classNames: 'exampleClassNameToAddToButton',
-        onClick: async (event) => {
+        onClick: (event) => {
           handleParticipantWorkflowChange(event, 'Potential')
         },
+        isRowSelectionSupported: true,
       },
       {
         buttonText: 'Hide from view',
         classNames: 'exampleClassNameToAddToButton',
-        onClick: async (event) => {
+        onClick: (event) => {
           handleParticipantWorkflowChange(event, 'Hidden')
         },
+        isRowSelectionSupported: true,
       },
     ],
   },

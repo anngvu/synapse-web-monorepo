@@ -1,15 +1,17 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import Plotly from 'plotly.js-basic-dist'
 import createPlotlyComponent from 'react-plotly.js/factory'
-import { SynapseConstants } from 'synapse-react-client'
+import {
+  GraphItem,
+  SynapseClient,
+  SynapseConstants,
+  SynapseUtilityFunctions,
+} from 'synapse-react-client'
 import {
   QueryBundleRequest,
   QueryResultBundle,
   RowSet,
-} from 'synapse-react-client/dist/utils/synapseTypes'
-import { getFullQueryTableResults } from 'synapse-react-client/dist/utils/SynapseClient'
-import { GraphItem } from 'synapse-react-client/dist/containers/widgets/themes-plot/types'
-import { resultToJson } from 'synapse-react-client/dist/utils/functions/sqlFunctions'
+} from '@sage-bionetworks/synapse-types'
 import { PlotParams } from 'react-plotly.js'
 
 const Plot = createPlotlyComponent(Plotly)
@@ -79,7 +81,7 @@ function getChartDataPoints(data: PlotData) {
     },
   }
 
-  var invitedData: Plotly.Data = {
+  const invitedData: Plotly.Data = {
     x: data.invited.map((val) => new Date(Number(val.x))),
     y: data.invited.map((val) => val.y),
     name: 'Invitations sent',
@@ -97,7 +99,7 @@ function getChartDataPoints(data: PlotData) {
     },
   }
 
-  var aptScheduledData: Plotly.Data = {
+  const aptScheduledData: Plotly.Data = {
     x: data.apptScheduled.map((val) => new Date(Number(val.x))),
     y: data.apptScheduled.map((val) => val.y),
     name: 'Labs scheduled',
@@ -114,7 +116,7 @@ function getChartDataPoints(data: PlotData) {
       symbol: 'circle',
     },
   }
-  var apptMadeData: Plotly.Data = {
+  const apptMadeData: Plotly.Data = {
     x: data.apptMade.map((val) => new Date(val.x)),
     y: data.apptMade.map((val) => val.y),
     name: 'Samples Collected/Appointments Made ',
@@ -133,7 +135,7 @@ function getChartDataPoints(data: PlotData) {
     },
   }
 
-  var data2 = [collectedData, invitedData, aptScheduledData, apptMadeData]
+  const data2 = [collectedData, invitedData, aptScheduledData, apptMadeData]
   return data2
 }
 
@@ -151,7 +153,7 @@ export function fetchData(
     },
   }
 
-  return getFullQueryTableResults(queryRequest, token).then(
+  return SynapseClient.getFullQueryTableResults(queryRequest, token).then(
     (data: QueryResultBundle) => {
       return data.queryResult!.queryResults
     },
@@ -188,10 +190,22 @@ const StatusLineChart: FunctionComponent<StatusLineChartProps> = ({
     Promise.all([collectedData, invitedData, apptScheduledData, apptMadeData])
       .then((result) => {
         setPlotData({
-          collected: resultToJson(result[0].headers, result[0].rows),
-          invited: resultToJson(result[1].headers, result[1].rows),
-          apptScheduled: resultToJson(result[2].headers, result[2].rows),
-          apptMade: resultToJson(result[3].headers, result[3].rows),
+          collected: SynapseUtilityFunctions.resultToJson(
+            result[0].headers,
+            result[0].rows,
+          ),
+          invited: SynapseUtilityFunctions.resultToJson(
+            result[1].headers,
+            result[1].rows,
+          ),
+          apptScheduled: SynapseUtilityFunctions.resultToJson(
+            result[2].headers,
+            result[2].rows,
+          ),
+          apptMade: SynapseUtilityFunctions.resultToJson(
+            result[3].headers,
+            result[3].rows,
+          ),
         })
         setIsLoaded(true)
       })

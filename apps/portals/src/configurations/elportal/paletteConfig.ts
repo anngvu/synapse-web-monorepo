@@ -1,6 +1,5 @@
-import { adKnowledgePortalPalette } from 'synapse-react-client/dist/utils/theme/palette/Palettes'
+import { Palettes } from 'synapse-react-client'
 
-//TODO: replace with new EL portal palette, once defined
-const palette = adKnowledgePortalPalette
+const palette = Palettes.elPortalPalette
 
 export default palette
